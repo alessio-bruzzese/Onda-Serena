@@ -235,7 +235,7 @@ export function AdminDashboard({
 
         {activeTab === "users" && <UsersManagement initialUsers={users} />}
         {activeTab === "bookings" && <BookingsManagement initialBookings={bookings} />}
-        {activeTab === "services" && <ServicesManagement initialServices={services} />}
+        {activeTab === "services" && <ServicesManagement initialServices={services as any} />}
       </div>
     </div>
   )
