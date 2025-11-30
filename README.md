@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ONDA SERENA - Conciergerie Côte Bleue
 
-## Getting Started
+Application web de conciergerie pour la gestion locative sur la Côte Bleue.
 
-First, run the development server:
+## 🚀 Démarrage rapide
+
+### 1. Configuration de l'environnement
+
+Créez un fichier `.env` à la racine du projet :
+
+```env
+# Base de données Supabase PostgreSQL
+DATABASE_URL="postgresql://postgres:[VOTRE_MOT_DE_PASSE]@db.[PROJECT_ID].supabase.co:5432/postgres"
+
+# NextAuth
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="[GÉNÉREZ_UNE_CLÉ_ALÉATOIRE]"
+
+# Optionnel : Supabase JS (si vous voulez utiliser le client Supabase)
+NEXT_PUBLIC_SUPABASE_URL="https://[PROJECT_ID].supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="[VOTRE_ANON_KEY]"
+```
+
+**Pour obtenir votre DATABASE_URL :**
+1. Allez sur [supabase.com](https://supabase.com)
+2. Settings → Database
+3. Onglet "Connection string" → "URI"
+4. Copiez l'URL et remplacez `[YOUR-PASSWORD]` par votre mot de passe
+
+### 2. Installation des dépendances
+
+```bash
+npm install
+```
+
+### 3. Configuration de la base de données
+
+```bash
+# Générer le client Prisma
+npm run prisma:generate
+
+# Créer les tables (migrations)
+npm run prisma:migrate
+
+# Créer le compte admin et les services
+npm run db:seed
+```
+
+### 4. Démarrer le serveur de développement
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔑 Identifiants Admin
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Après avoir exécuté `npm run db:seed` :
 
-## Learn More
+- **Email :** `admin@ondaserena.com`
+- **Mot de passe :** `OndaSerena2025!`
+- **Dashboard :** http://localhost:3000/admin
 
-To learn more about Next.js, take a look at the following resources:
+## 📋 Commandes disponibles
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Développement
+npm run dev              # Démarrer le serveur de développement
+npm run build            # Construire pour la production
+npm run start            # Démarrer le serveur de production
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Base de données
+npm run prisma:generate  # Générer le client Prisma
+npm run prisma:migrate   # Appliquer les migrations
+npm run prisma:push      # Push direct du schéma (dev uniquement)
+npm run db:seed          # Créer le compte admin et les services
 
-## Deploy on Vercel
+# Utilitaires
+npm run test:connection  # Tester la connexion à la base de données
+npm run diagnose         # Diagnostic de connexion (teste plusieurs configs)
+npm run create:admin     # Créer uniquement le compte admin
+npm run lint             # Vérifier le code avec ESLint
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🧪 Tester la connexion
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Si vous avez des problèmes de connexion :
+
+```bash
+# Test simple
+npm run test:connection
+
+# Diagnostic complet (teste plusieurs configurations)
+npm run diagnose
+```
+
+## 📖 Documentation
+
+- `SUPABASE_SETUP.md` - Guide détaillé de configuration Supabase
+- `README_SUPABASE.md` - Guide rapide Supabase
+- `ADMIN_CREDENTIALS.md` - Informations sur le compte admin
+
+## 🛠️ Technologies utilisées
+
+- **Next.js 16** - Framework React
+- **Prisma** - ORM pour PostgreSQL
+- **NextAuth** - Authentification
+- **Tailwind CSS** - Styling
+- **TypeScript** - Typage statique
+- **Supabase** - Base de données PostgreSQL
+
+## 📝 Structure du projet
+
+```
+├── prisma/
+│   ├── schema.prisma    # Schéma de la base de données
+│   └── seed.ts          # Données initiales
+├── src/
+│   ├── app/             # Pages et routes Next.js
+│   ├── components/      # Composants React
+│   └── lib/             # Utilitaires et configuration
+└── scripts/             # Scripts utilitaires
+```
+
+## ⚠️ Dépannage
+
+### Erreur "Can't reach database server"
+
+1. Vérifiez que votre projet Supabase est **actif** (pas en pause)
+2. Vérifiez votre `DATABASE_URL` dans `.env`
+3. Vérifiez votre mot de passe de base de données
+4. Exécutez `npm run diagnose` pour un diagnostic complet
+
+### Erreur "relation does not exist"
+
+Exécutez les migrations :
+```bash
+npm run prisma:migrate
+```
+
+### Erreur de type Prisma
+
+Générez le client Prisma :
+```bash
+npm run prisma:generate
+```
+
+---
+
+**Développé pour ONDA SERENA - Conciergerie Côte Bleue**

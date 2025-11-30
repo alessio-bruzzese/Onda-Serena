@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  ADMIN
+  CLIENT
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id             String          @id @default(cuid())
+  email          String          @unique
+  passwordHash   String?
+  firstName      String?
+  lastName       String?
+  phone          String?
+  role           UserRole        @default(CLIENT)
+  marketingOptOut Boolean         @default(false)
+  termsAccepted   Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  profile        ClientProfile?
+  bookings       Booking[]
+
+  @@map("users")
+}
+
+model ClientProfile {
+  id               String   @id @default(cuid())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String   @unique
+  preferences      String?
+  lifestyleNotes   String?
+  vipStatus        String?  @default("STANDARD")
+  favoriteServices String[] @default([])
+  tags             String[] @default([])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("client_profiles")
+}
+
+enum PriceType {
+  PERCENTAGE
+  QUOTE
+}
+
+model Service {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String
+  price       Decimal   @db.Decimal(10, 2)
+  priceType   PriceType @default(QUOTE)
+  category    String
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  bookings    Booking[]
+
+  @@map("services")
+}
+
+model Booking {
+  id         String        @id @default(cuid())
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  service    Service       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId  String
+  date       DateTime
+  status     BookingStatus @default(PENDING)
+  notes      String?
+  adminNotes String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([serviceId])
+  @@map("bookings")
+}
+
+
