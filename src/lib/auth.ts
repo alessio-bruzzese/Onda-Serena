@@ -1,5 +1,6 @@
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import type { NextAuthConfig } from "next-auth"
+//import type { NextAuthConfig } from "next-auth"
+type NextAuthConfig = any;
 import Credentials from "next-auth/providers/credentials"
 import EmailProvider from "next-auth/providers/email"
 import Google from "next-auth/providers/google"
