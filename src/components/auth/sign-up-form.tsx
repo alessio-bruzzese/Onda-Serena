@@ -55,10 +55,10 @@ export function SignUpForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-6">
         <div className="grid gap-4 md:grid-cols-2">
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="firstName"
             render={({ field }) => (
               <FormItem>
@@ -75,7 +75,7 @@ export function SignUpForm() {
             )}
           />
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="lastName"
             render={({ field }) => (
               <FormItem>
@@ -94,7 +94,7 @@ export function SignUpForm() {
         </div>
 
         <FormField
-          control={form.control}
+          control={form.control as any}
           name="email"
           render={({ field }) => (
             <FormItem>
@@ -113,7 +113,7 @@ export function SignUpForm() {
         />
 
         <FormField
-          control={form.control}
+          control={form.control as any}
           name="phone"
           render={({ field }) => (
             <FormItem>
@@ -132,7 +132,7 @@ export function SignUpForm() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="password"
             render={({ field }) => (
               <FormItem>
@@ -150,7 +150,7 @@ export function SignUpForm() {
             )}
           />
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="passwordConfirmation"
             render={({ field }) => (
               <FormItem>
@@ -170,7 +170,7 @@ export function SignUpForm() {
         </div>
 
         <FormField
-          control={form.control}
+          control={form.control as any}
           name="termsAccepted"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0">
@@ -195,7 +195,7 @@ export function SignUpForm() {
         />
 
         <FormField
-          control={form.control}
+          control={form.control as any}
           name="marketingOptOut"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-x-3 space-y-0">
