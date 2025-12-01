@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Cinzel_Decorative, Marcellus_SC, Lato, Nunito_Sans } from "next/font/google"
 import "./globals.css"
 import { Providers } from "@/components/providers"
@@ -44,6 +45,7 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <body className={`${cinzelDecorative.variable} ${marcellusSC.variable} ${lato.variable} ${nunitoSans.variable} font-sans text-foreground antialiased`}>
         <Providers>{children}</Providers>
+        <SpeedInsights />
       </body>
     </html>
   )
