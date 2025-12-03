@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Instagram, Sun } from "lucide-react"
+import { Instagram } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 

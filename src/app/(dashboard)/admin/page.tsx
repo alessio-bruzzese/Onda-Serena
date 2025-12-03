@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation"
 import { getCurrentSession } from "@/lib/session"
 import { AdminDashboard } from "@/components/dashboard/admin/admin-dashboard"
+import type { Booking, UserProfile, Service } from "@/types/firestore"
+
+import { serializeFirestoreData } from "@/lib/utils"
 
 export default async function AdminDashboardPage() {
   const session = await getCurrentSession()
@@ -20,24 +23,52 @@ export default async function AdminDashboardPage() {
     db.collection("services").orderBy("name", "asc").get(),
   ])
 
-  const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), date: new Date(doc.data().date) }));
-  const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...serializeFirestoreData(doc.data()) })) as Booking[];
+  const users = usersSnapshot.docs.map(doc => {
+    const userData = serializeFirestoreData(doc.data());
+    const userBookingsCount = bookings.filter(b => b.userId === doc.id).length;
+    return {
+      id: doc.id,
+      ...userData,
+      _count: { bookings: userBookingsCount }
+    };
+  }) as UserProfile[];
+  const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...serializeFirestoreData(doc.data()) })) as Service[];
 
   // Calculate stats
-  const bookingsThisMonth = bookings.filter((b: any) => b.date >= startOfMonth).length;
+  const bookingsThisMonth = bookings.filter((b) => b.date >= startOfMonth).length;
   const activeClients = users.length; // Simplified
-  const confirmedCount = bookings.filter((b: any) => b.status === "CONFIRMED").length;
+  const confirmedCount = bookings.filter((b) => b.status === "CONFIRMED").length;
   const totalBookings = bookings.length;
 
   // Manual joins for bookings
-  const bookingsWithRelations = bookings.map((booking: any) => {
-    const user = users.find((u: any) => u.id === booking.userId);
-    const service = services.find((s: any) => s.id === booking.serviceId);
+  const bookingsWithRelations = bookings.map((booking) => {
+    const user = users.find((u) => u.id === booking.userId);
+    const service = services.find((s) => s.id === booking.serviceId);
     return {
       ...booking,
-      user: user || { email: "Unknown", firstName: "Unknown", lastName: "" },
-      service: service || { name: "Unknown", price: 0 },
+      notes: booking.notes || null,
+      adminNotes: booking.adminNotes || null,
+      user: user || {
+        id: "unknown",
+        email: "Unknown",
+        firstName: "Unknown",
+        lastName: "",
+        role: "CLIENT",
+        createdAt: new Date(),
+        phone: null,
+        profile: null,
+        _count: { bookings: 0 }
+      },
+      service: service || {
+        id: "unknown",
+        name: "Unknown",
+        description: "",
+        price: 0,
+        priceType: "FIXED",
+        category: "Unknown",
+        imageUrl: null
+      },
     };
   });
 

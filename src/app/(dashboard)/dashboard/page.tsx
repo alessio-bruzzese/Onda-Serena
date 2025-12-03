@@ -2,6 +2,8 @@ import { redirect } from "next/navigation"
 import { getCurrentSession } from "@/lib/session"
 import { BookingForm } from "@/components/dashboard/client/booking-form"
 import { BookingHistory } from "@/components/dashboard/client/booking-history"
+import type { Booking, Service, UserProfile } from "@/types/firestore"
+import { serializeFirestoreData } from "@/lib/utils"
 
 
 export default async function ClientDashboardPage() {
@@ -18,32 +20,40 @@ export default async function ClientDashboardPage() {
     db.collection("services").orderBy("name", "asc").get(),
   ])
 
-  const user = userDoc.exists ? userDoc.data() : null;
+  const user = userDoc.exists ? { id: userDoc.id, ...serializeFirestoreData(userDoc.data()) } : null;
 
   const bookings = bookingsSnapshot.docs.map(doc => {
-    const data = doc.data();
+    const data = serializeFirestoreData(doc.data());
     return {
       id: doc.id,
       ...data,
-      date: new Date(data.date), // Convert string back to Date
+      date: new Date(data.date), // Ensure date is a Date object
     }
-  }).sort((a: any, b: any) => b.date.getTime() - a.date.getTime()); // Sort desc
+  }).sort((a, b) => b.date.getTime() - a.date.getTime()) as Booking[]; // Sort desc
 
   const services = servicesSnapshot.docs.map(doc => ({
     id: doc.id,
-    ...doc.data(),
-  }));
+    ...serializeFirestoreData(doc.data()),
+  })) as Service[];
 
   // Attach bookings to user object to match previous structure if needed, 
   // or just pass bookings directly if I change the component usage.
   // The component expects `user.bookings`.
   if (user) {
-    user.bookings = bookings.map((booking: any) => {
+    (user as UserProfile).bookings = bookings.map((booking: Booking) => {
       // We need to attach the service details to the booking
-      const service = services.find((s: any) => s.id === booking.serviceId);
+      const service = services.find((s) => s.id === booking.serviceId);
       return {
         ...booking,
-        service: service || { name: "Unknown", category: "Unknown" },
+        service: service || {
+          id: "unknown",
+          name: "Unknown",
+          description: "",
+          price: 0,
+          priceType: "FIXED",
+          category: "Unknown",
+          imageUrl: null
+        },
       };
     });
   }
@@ -64,14 +74,14 @@ export default async function ClientDashboardPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <BookingHistory
-          bookings={user.bookings.map((booking) => ({
+          bookings={user.bookings.map((booking: Booking) => ({
             id: booking.id,
             status: booking.status,
             date: booking.date.toISOString(),
             notes: booking.notes,
             service: {
-              name: booking.service.name,
-              category: booking.service.category,
+              name: booking.service?.name ?? "Unknown",
+              category: booking.service?.category ?? "Unknown",
             },
           }))}
         />

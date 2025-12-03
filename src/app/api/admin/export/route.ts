@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getCurrentSession } from "@/lib/session"
+import type { Booking, Service, UserProfile } from "@/types/firestore"
 
 export async function GET(request: NextRequest) {
   const session = await getCurrentSession()
@@ -20,11 +21,11 @@ export async function GET(request: NextRequest) {
         const usersSnapshot = await db.collection("users").orderBy("createdAt", "desc").get();
         const bookingsSnapshot = await db.collection("bookings").get();
 
-        const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as UserProfile[];
+        const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
 
-        data = users.map((user: any) => {
-          const userBookingsCount = bookings.filter((b: any) => b.userId === user.id).length;
+        data = users.map((user) => {
+          const userBookingsCount = bookings.filter((b) => b.userId === user.id).length;
           return {
             id: user.id,
             email: user.email,
@@ -52,19 +53,19 @@ export async function GET(request: NextRequest) {
         const usersSnapshot = await db.collection("users").get();
         const servicesSnapshot = await db.collection("services").get();
 
-        const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
+        const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as UserProfile[];
+        const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Service[];
 
-        data = bookings.map((booking: any) => {
-          const user = users.find((u: any) => u.id === booking.userId) || {};
-          const service = services.find((s: any) => s.id === booking.serviceId) || {};
+        data = bookings.map((booking) => {
+          const user = users.find((u) => u.id === booking.userId);
+          const service = services.find((s) => s.id === booking.serviceId);
           return {
             id: booking.id,
-            userEmail: user.email || "",
-            userName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
-            serviceName: service.name || "",
-            servicePrice: (service.price || 0).toString(),
+            userEmail: user?.email || "",
+            userName: `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
+            serviceName: service?.name || "",
+            servicePrice: (service?.price || 0).toString(),
             date: booking.date,
             status: booking.status,
             notes: booking.notes || "",
@@ -80,11 +81,11 @@ export async function GET(request: NextRequest) {
         const servicesSnapshot = await db.collection("services").orderBy("name", "asc").get();
         const bookingsSnapshot = await db.collection("bookings").get();
 
-        const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Service[];
+        const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
 
-        data = services.map((service: any) => {
-          const bookingsCount = bookings.filter((b: any) => b.serviceId === service.id).length;
+        data = services.map((service) => {
+          const bookingsCount = bookings.filter((b) => b.serviceId === service.id).length;
           return {
             id: service.id,
             name: service.name,
@@ -107,39 +108,39 @@ export async function GET(request: NextRequest) {
           db.collection("services").get(),
         ]);
 
-        const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as UserProfile[];
+        const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[];
+        const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Service[];
 
         data = {
-          users: users.map((user: any) => ({
+          users: users.map((user) => ({
             id: user.id,
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
             phone: user.phone,
             role: user.role,
-            bookingsCount: bookings.filter((b: any) => b.userId === user.id).length,
+            bookingsCount: bookings.filter((b) => b.userId === user.id).length,
             createdAt: user.createdAt,
           })),
-          bookings: bookings.map((booking: any) => {
-            const user = users.find((u: any) => u.id === booking.userId) || {};
-            const service = services.find((s: any) => s.id === booking.serviceId) || {};
+          bookings: bookings.map((booking) => {
+            const user = users.find((u) => u.id === booking.userId);
+            const service = services.find((s) => s.id === booking.serviceId);
             return {
               id: booking.id,
-              userEmail: user.email || "",
-              serviceName: service.name || "",
+              userEmail: user?.email || "",
+              serviceName: service?.name || "",
               date: booking.date,
               status: booking.status,
               createdAt: booking.createdAt,
             };
           }),
-          services: services.map((service: any) => ({
+          services: services.map((service) => ({
             id: service.id,
             name: service.name,
             price: (service.price || 0).toString(),
             category: service.category,
-            bookingsCount: bookings.filter((b: any) => b.serviceId === service.id).length,
+            bookingsCount: bookings.filter((b) => b.serviceId === service.id).length,
           })),
         }
         break

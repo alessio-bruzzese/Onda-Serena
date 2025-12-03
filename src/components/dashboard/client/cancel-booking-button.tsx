@@ -26,7 +26,7 @@ export function CancelBookingButton({ bookingId }: CancelBookingButtonProps) {
             } else {
                 toast.success(result.success)
             }
-        } catch (error) {
+        } catch {
             toast.error("Une erreur est survenue")
         } finally {
             setIsPending(false)

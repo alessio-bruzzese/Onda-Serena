@@ -43,6 +43,14 @@ export async function registerUser(values: SignUpValues) {
 
     const userId = newUserRef.id;
 
+    // Send welcome email
+    // We don't await this to not block the response, or we can await if we want to ensure it sent.
+    // For better UX, we usually don't block, but for simplicity here we can await or just fire and forget.
+    // Let's fire and forget but catch errors to not crash.
+    import("@/lib/mail").then(({ sendWelcomeEmail }) => {
+      sendWelcomeEmail(email, firstName).catch(console.error);
+    });
+
     revalidatePath("/sign-in")
     return {
       success: "Compte créé, vous pouvez vous connecter.",

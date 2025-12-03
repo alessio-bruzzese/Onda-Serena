@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createService, updateService, deleteService } from "@/app/(dashboard)/admin/actions"
-import { Download, Edit2, Trash2, X, Check, Plus } from "lucide-react"
+import { Edit2, Trash2, X, Check } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type ServiceType = {
@@ -73,10 +73,7 @@ export function ServicesManagement({ initialServices }: Props) {
     })
   }
 
-  const handleExport = (format: "json" | "csv") => {
-    const url = `/api/admin/export?entity=services&type=${format}`
-    window.open(url, "_blank")
-  }
+
 
   return (
     <div className="space-y-6">

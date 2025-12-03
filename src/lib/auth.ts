@@ -1,30 +1,25 @@
 //import type { NextAuthConfig } from "next-auth"
-import type { Session } from "next-auth"
+import type { Session, User } from "next-auth"
 import type { JWT } from "next-auth/jwt"
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NextAuthConfig = any;
 import Credentials from "next-auth/providers/credentials"
-import EmailProvider from "next-auth/providers/email"
-import Google from "next-auth/providers/google"
+// import EmailProvider from "next-auth/providers/email"
+
 import bcrypt from "bcryptjs"
 import { signInSchema } from "@/lib/validators/auth"
 
 const providers = [
-  ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-    ? [
-      Google({
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      }),
-    ]
-    : []),
-  ...(process.env.EMAIL_SERVER
-    ? [
-      EmailProvider({
-        server: process.env.EMAIL_SERVER,
-        from: process.env.EMAIL_FROM ?? "concierge@maison-nova.app",
-      }),
-    ]
-    : []),
+
+  // EmailProvider removed as it requires an Adapter and we only use credentials/google
+  // ...(process.env.EMAIL_SERVER
+  //   ? [
+  //     EmailProvider({
+  //       server: process.env.EMAIL_SERVER,
+  //       from: process.env.EMAIL_FROM ?? "concierge@maison-nova.app",
+  //     }),
+  //   ]
+  //   : []),
   Credentials({
     name: "Credentials",
     credentials: {
@@ -63,12 +58,78 @@ const providers = [
       }
     },
   }),
+  Credentials({
+    id: "google-firebase",
+    name: "Google Firebase",
+    credentials: {
+      idToken: { label: "ID Token", type: "text" },
+    },
+    async authorize(credentials) {
+      if (!credentials?.idToken) return null;
+
+      try {
+        const { auth, db } = await import("@/lib/firebase-admin");
+        const decodedToken = await auth.verifyIdToken(credentials.idToken as string);
+        const email = decodedToken.email;
+
+        if (!email) return null;
+
+        const usersRef = db.collection("users");
+        const snapshot = await usersRef.where("email", "==", email.toLowerCase()).get();
+
+        if (snapshot.empty) {
+          // Create new user
+          const newUser = {
+            email: email.toLowerCase(),
+            firstName: decodedToken.name?.split(" ")[0] || "",
+            lastName: decodedToken.name?.split(" ").slice(1).join(" ") || "",
+            image: decodedToken.picture,
+            role: "CLIENT",
+            createdAt: new Date(),
+            provider: "google"
+          };
+          const docRef = await usersRef.add(newUser);
+
+          // Send welcome email
+          import("@/lib/mail").then(({ sendWelcomeEmail }) => {
+            sendWelcomeEmail(newUser.email, newUser.firstName).catch(console.error);
+          });
+
+          return {
+            id: docRef.id,
+            email: newUser.email,
+            name: decodedToken.name,
+            image: newUser.image,
+            role: newUser.role,
+          };
+        } else {
+          // Existing user
+          const userDoc = snapshot.docs[0];
+          const userData = userDoc.data();
+          return {
+            id: userDoc.id,
+            email: userData.email,
+            name: [userData.firstName, userData.lastName].filter(Boolean).join(" "),
+            image: userData.image,
+            role: userData.role,
+          };
+        }
+      } catch (error) {
+        console.error("Error verifying Firebase ID token:", error);
+        return null;
+      }
+    },
+  }),
 ]
 
 export const authConfig = {
   session: { strategy: "jwt" },
   providers,
   callbacks: {
+    async signIn() {
+      // Logic moved to authorize for google-firebase provider
+      return true;
+    },
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         session.user.id = token.sub ?? session.user.id
@@ -76,9 +137,9 @@ export const authConfig = {
       }
       return session
     },
-    async jwt({ token, user }: { token: JWT; user?: any }) {
+    async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
-        token.role = ((user as { role?: string }).role as "ADMIN" | "CLIENT" | undefined) ?? token.role
+        token.role = user.role ?? token.role
       }
       return token
     },

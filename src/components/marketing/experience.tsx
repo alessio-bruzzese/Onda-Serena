@@ -1,6 +1,6 @@
 import { CheckCircle2, Clock9, Globe2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+
 
 const highlights = [
   {

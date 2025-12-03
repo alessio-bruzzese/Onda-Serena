@@ -49,6 +49,7 @@ type ServiceType = {
   name: string
   description: string
   price: number | string
+  priceType: "FIXED" | "PERCENTAGE" | "QUOTE"
   category: string
   imageUrl: string | null
 }
@@ -235,7 +236,7 @@ export function AdminDashboard({
 
         {activeTab === "users" && <UsersManagement initialUsers={users} />}
         {activeTab === "bookings" && <BookingsManagement initialBookings={bookings} />}
-        {activeTab === "services" && <ServicesManagement initialServices={services as any} />}
+        {activeTab === "services" && <ServicesManagement initialServices={services} />}
       </div>
     </div>
   )

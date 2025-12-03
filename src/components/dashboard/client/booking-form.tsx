@@ -24,7 +24,7 @@ type BookingFormProps = {
     name: string
     category: string
     price: number
-    priceType: "PERCENTAGE" | "QUOTE"
+    priceType: "FIXED" | "PERCENTAGE" | "QUOTE"
   }[]
 }
 

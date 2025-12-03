@@ -1,5 +1,5 @@
+// @ts-expect-error: Prisma client not generated
 import { PrismaClient } from "@prisma/client"
-// @ts-ignore
 import bcrypt from "bcryptjs"
 
 const prisma = new PrismaClient()
@@ -50,7 +50,7 @@ async function main() {
       create: {
         ...service,
         price: service.price,
-        priceType: service.priceType as any,
+        priceType: service.priceType as "FIXED" | "PERCENTAGE" | "QUOTE",
       },
     })
   }
