@@ -12,7 +12,19 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const app = !getApps().length && firebaseConfig.apiKey
+    ? initializeApp(firebaseConfig)
+    : getApps().length
+        ? getApp()
+        : initializeApp(firebaseConfig); // This might still fail if config is empty, but let's try to be safer
+
+// If we are in a build environment where env vars might be missing (though they shouldn't be for NEXT_PUBLIC_),
+// we might need to mock or handle it. But usually NEXT_PUBLIC_ vars are available at build time.
+// The error "auth/invalid-api-key" comes from getAuth() or initializeApp() when apiKey is missing/invalid.
+
+if (!firebaseConfig.apiKey) {
+    console.warn("Firebase API Key is missing. Check your .env file.");
+}
 const db = getFirestore(app);
 const auth = getAuth(app);
 
