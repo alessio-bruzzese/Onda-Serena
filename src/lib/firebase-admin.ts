@@ -3,7 +3,11 @@ import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const serviceAccount = require("../../service-account.json");
+// const serviceAccount = require("../../service-account.json");
+
+const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY
+    ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
+    : undefined;
 
 const app = !getApps().length
     ? initializeApp({
