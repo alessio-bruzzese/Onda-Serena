@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getCurrentSession } from "@/lib/session"
-import { prisma } from "@/lib/prisma"
 
 export async function GET(request: NextRequest) {
   const session = await getCurrentSession()
@@ -17,121 +16,130 @@ export async function GET(request: NextRequest) {
 
     switch (entity) {
       case "users": {
-        const users = await prisma.user.findMany({
-          include: {
-            profile: true,
-            _count: { select: { bookings: true } },
-          },
-          orderBy: { createdAt: "desc" },
-        })
-        data = users.map((user) => ({
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          phone: user.phone,
-          role: user.role,
-          marketingOptOut: "marketingOptOut" in user ? (user as { marketingOptOut?: boolean }).marketingOptOut : false,
-          termsAccepted: "termsAccepted" in user ? (user as { termsAccepted?: boolean }).termsAccepted : false,
-          bookingsCount: user._count.bookings,
-          preferences: user.profile?.preferences || "",
-          lifestyleNotes: user.profile?.lifestyleNotes || "",
-          vipStatus: user.profile?.vipStatus || "",
-          favoriteServices: user.profile?.favoriteServices || [],
-          tags: user.profile?.tags || [],
-          createdAt: user.createdAt.toISOString(),
-          updatedAt: user.updatedAt.toISOString(),
-        }))
-        break
-      }
-      case "bookings": {
-        const bookings = await prisma.booking.findMany({
-          include: {
-            user: true,
-            service: true,
-          },
-          orderBy: { createdAt: "desc" },
-        })
-        data = bookings.map((booking) => ({
-          id: booking.id,
-          userEmail: booking.user.email,
-          userName: `${booking.user.firstName || ""} ${booking.user.lastName || ""}`.trim(),
-          serviceName: booking.service.name,
-          servicePrice: booking.service.price.toString(),
-          date: booking.date.toISOString(),
-          status: booking.status,
-          notes: booking.notes || "",
-          adminNotes: booking.adminNotes || "",
-          createdAt: booking.createdAt.toISOString(),
-          updatedAt: booking.updatedAt.toISOString(),
-        }))
-        break
-      }
-      case "services": {
-        const services = await prisma.service.findMany({
-          include: {
-            _count: { select: { bookings: true } },
-          },
-          orderBy: { name: "asc" },
-        })
-        data = services.map((service) => ({
-          id: service.id,
-          name: service.name,
-          description: service.description,
-          price: service.price.toString(),
-          category: service.category,
-          imageUrl: service.imageUrl || "",
-          bookingsCount: service._count.bookings,
-          createdAt: service.createdAt.toISOString(),
-          updatedAt: service.updatedAt.toISOString(),
-        }))
-        break
-      }
-      case "all": {
-        const [users, bookings, services] = await Promise.all([
-          prisma.user.findMany({
-            include: {
-              profile: true,
-              _count: { select: { bookings: true } },
-            },
-          }),
-          prisma.booking.findMany({
-            include: {
-              user: true,
-              service: true,
-            },
-          }),
-          prisma.service.findMany({
-            include: {
-              _count: { select: { bookings: true } },
-            },
-          }),
-        ])
-        data = {
-          users: users.map((user) => ({
+        const { db } = await import("@/lib/firebase-admin");
+        const usersSnapshot = await db.collection("users").orderBy("createdAt", "desc").get();
+        const bookingsSnapshot = await db.collection("bookings").get();
+
+        const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        data = users.map((user: any) => {
+          const userBookingsCount = bookings.filter((b: any) => b.userId === user.id).length;
+          return {
             id: user.id,
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
             phone: user.phone,
             role: user.role,
-            bookingsCount: user._count.bookings,
-            createdAt: user.createdAt.toISOString(),
-          })),
-          bookings: bookings.map((booking) => ({
+            marketingOptOut: user.marketingOptOut || false,
+            termsAccepted: user.termsAccepted || false,
+            bookingsCount: userBookingsCount,
+            preferences: user.preferences || "",
+            lifestyleNotes: user.lifestyleNotes || "",
+            vipStatus: user.vipStatus || "",
+            favoriteServices: user.favoriteServices || [],
+            tags: user.tags || [],
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+          };
+        })
+        break
+      }
+      case "bookings": {
+        const { db } = await import("@/lib/firebase-admin");
+        const bookingsSnapshot = await db.collection("bookings").orderBy("createdAt", "desc").get();
+        const usersSnapshot = await db.collection("users").get();
+        const servicesSnapshot = await db.collection("services").get();
+
+        const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        data = bookings.map((booking: any) => {
+          const user = users.find((u: any) => u.id === booking.userId) || {};
+          const service = services.find((s: any) => s.id === booking.serviceId) || {};
+          return {
             id: booking.id,
-            userEmail: booking.user.email,
-            serviceName: booking.service.name,
-            date: booking.date.toISOString(),
+            userEmail: user.email || "",
+            userName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+            serviceName: service.name || "",
+            servicePrice: (service.price || 0).toString(),
+            date: booking.date,
             status: booking.status,
-            createdAt: booking.createdAt.toISOString(),
-          })),
-          services: services.map((service) => ({
+            notes: booking.notes || "",
+            adminNotes: booking.adminNotes || "",
+            createdAt: booking.createdAt,
+            updatedAt: booking.updatedAt,
+          };
+        })
+        break
+      }
+      case "services": {
+        const { db } = await import("@/lib/firebase-admin");
+        const servicesSnapshot = await db.collection("services").orderBy("name", "asc").get();
+        const bookingsSnapshot = await db.collection("bookings").get();
+
+        const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        data = services.map((service: any) => {
+          const bookingsCount = bookings.filter((b: any) => b.serviceId === service.id).length;
+          return {
             id: service.id,
             name: service.name,
-            price: service.price.toString(),
+            description: service.description,
+            price: (service.price || 0).toString(),
             category: service.category,
-            bookingsCount: service._count.bookings,
+            imageUrl: service.imageUrl || "",
+            bookingsCount: bookingsCount,
+            createdAt: service.createdAt,
+            updatedAt: service.updatedAt,
+          };
+        })
+        break
+      }
+      case "all": {
+        const { db } = await import("@/lib/firebase-admin");
+        const [usersSnapshot, bookingsSnapshot, servicesSnapshot] = await Promise.all([
+          db.collection("users").get(),
+          db.collection("bookings").get(),
+          db.collection("services").get(),
+        ]);
+
+        const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        data = {
+          users: users.map((user: any) => ({
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            phone: user.phone,
+            role: user.role,
+            bookingsCount: bookings.filter((b: any) => b.userId === user.id).length,
+            createdAt: user.createdAt,
+          })),
+          bookings: bookings.map((booking: any) => {
+            const user = users.find((u: any) => u.id === booking.userId) || {};
+            const service = services.find((s: any) => s.id === booking.serviceId) || {};
+            return {
+              id: booking.id,
+              userEmail: user.email || "",
+              serviceName: service.name || "",
+              date: booking.date,
+              status: booking.status,
+              createdAt: booking.createdAt,
+            };
+          }),
+          services: services.map((service: any) => ({
+            id: service.id,
+            name: service.name,
+            price: (service.price || 0).toString(),
+            category: service.category,
+            bookingsCount: bookings.filter((b: any) => b.serviceId === service.id).length,
           })),
         }
         break

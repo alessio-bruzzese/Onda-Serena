@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import { prisma } from "@/lib/prisma"
 import { getCurrentSession } from "@/lib/session"
 import { bookingRequestSchema } from "@/lib/validators/booking"
 import { profileSchema } from "@/lib/validators/profile"
@@ -23,13 +22,16 @@ export async function createBooking(formData: FormData | Record<string, unknown>
     return { error: "Merci de vérifier les informations de réservation." }
   }
 
-  await prisma.booking.create({
-    data: {
-      userId: session.user.id,
-      serviceId: parsed.data.serviceId,
-      date: parsed.data.date,
-      notes: parsed.data.notes,
-    },
+  const { db } = await import("@/lib/firebase-admin");
+
+  await db.collection("bookings").add({
+    userId: session.user.id,
+    serviceId: parsed.data.serviceId,
+    date: parsed.data.date.toISOString(),
+    notes: parsed.data.notes,
+    status: "PENDING",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   })
 
   revalidatePath("/client")
@@ -95,32 +97,20 @@ export async function updateProfile(formData: FormData | Record<string, unknown>
   }
 
   // Update User info
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: {
-      firstName: parsed.data.firstName,
-      lastName: parsed.data.lastName,
-      phone: parsed.data.phone,
-    },
-  })
+  const { db } = await import("@/lib/firebase-admin");
 
-  // Update Profile info
-  await prisma.clientProfile.upsert({
-    where: { userId: session.user.id },
-    update: {
-      preferences: parsed.data.preferences,
-      lifestyleNotes: parsed.data.lifestyleNotes,
-      favoriteServices: parsed.data.favoriteServices,
-      tags: parsed.data.tags,
-    },
-    create: {
-      userId: session.user.id,
-      preferences: parsed.data.preferences,
-      lifestyleNotes: parsed.data.lifestyleNotes,
-      favoriteServices: parsed.data.favoriteServices,
-      tags: parsed.data.tags,
-    },
-  })
+  const userRef = db.collection("users").doc(session.user.id);
+
+  await userRef.set({
+    firstName: parsed.data.firstName,
+    lastName: parsed.data.lastName,
+    phone: parsed.data.phone,
+    preferences: parsed.data.preferences,
+    lifestyleNotes: parsed.data.lifestyleNotes,
+    favoriteServices: parsed.data.favoriteServices,
+    tags: parsed.data.tags,
+    updatedAt: new Date().toISOString(),
+  }, { merge: true });
 
   revalidatePath("/profile")
   revalidatePath("/dashboard")

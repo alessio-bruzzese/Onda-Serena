@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation"
-import { prisma } from "@/lib/prisma"
 import { getCurrentSession } from "@/lib/session"
 import { ProfileForm } from "@/components/dashboard/client/profile-form"
 
@@ -9,12 +8,9 @@ export default async function ProfilePage() {
         redirect("/sign-in")
     }
 
-    const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        include: {
-            profile: true,
-        },
-    })
+    const { db } = await import("@/lib/firebase-admin");
+    const userDoc = await db.collection("users").doc(session.user.id).get();
+    const user = userDoc.exists ? userDoc.data() : null;
 
     if (!user) {
         redirect("/sign-in")
@@ -36,16 +32,12 @@ export default async function ProfilePage() {
                     lastName: user.lastName,
                     phone: user.phone,
                 }}
-                profile={
-                    user.profile
-                        ? {
-                            preferences: user.profile.preferences,
-                            lifestyleNotes: user.profile.lifestyleNotes,
-                            favoriteServices: user.profile.favoriteServices,
-                            tags: user.profile.tags,
-                        }
-                        : undefined
-                }
+                profile={{
+                    preferences: user.preferences,
+                    lifestyleNotes: user.lifestyleNotes,
+                    favoriteServices: user.favoriteServices,
+                    tags: user.tags,
+                }}
             />
         </div>
     )

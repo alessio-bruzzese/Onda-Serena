@@ -1,4 +1,3 @@
-import { PrismaAdapter } from "@auth/prisma-adapter"
 //import type { NextAuthConfig } from "next-auth"
 import type { Session } from "next-auth"
 import type { JWT } from "next-auth/jwt"
@@ -7,7 +6,6 @@ import Credentials from "next-auth/providers/credentials"
 import EmailProvider from "next-auth/providers/email"
 import Google from "next-auth/providers/google"
 import bcrypt from "bcryptjs"
-import { prisma } from "@/lib/prisma"
 import { signInSchema } from "@/lib/validators/auth"
 
 const providers = [
@@ -38,9 +36,18 @@ const providers = [
       if (!parsed.success) {
         return null
       }
-      const user = await prisma.user.findUnique({
-        where: { email: parsed.data.email.toLowerCase() },
-      })
+
+      const { db } = await import("@/lib/firebase-admin");
+      const usersRef = db.collection("users");
+      const snapshot = await usersRef.where("email", "==", parsed.data.email.toLowerCase()).get();
+
+      if (snapshot.empty) {
+        return null;
+      }
+
+      const userDoc = snapshot.docs[0];
+      const user = userDoc.data();
+
       if (!user || !user.passwordHash) {
         return null
       }
@@ -49,7 +56,7 @@ const providers = [
         return null
       }
       return {
-        id: user.id,
+        id: userDoc.id,
         email: user.email,
         name: [user.firstName, user.lastName].filter(Boolean).join(" ") || undefined,
         role: user.role,
@@ -59,7 +66,6 @@ const providers = [
 ]
 
 export const authConfig = {
-  adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   providers,
   callbacks: {

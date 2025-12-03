@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation"
-import { prisma } from "@/lib/prisma"
 import { getCurrentSession } from "@/lib/session"
 import { BookingForm } from "@/components/dashboard/client/booking-form"
 import { BookingHistory } from "@/components/dashboard/client/booking-history"
@@ -11,21 +10,43 @@ export default async function ClientDashboardPage() {
     redirect("/sign-in")
   }
 
-  const [user, services] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: {
-        profile: true,
-        bookings: {
-          include: { service: true },
-          orderBy: { date: "desc" },
-        },
-      },
-    }),
-    prisma.service.findMany({
-      orderBy: { name: "asc" },
-    }),
+  const { db } = await import("@/lib/firebase-admin");
+
+  const [userDoc, bookingsSnapshot, servicesSnapshot] = await Promise.all([
+    db.collection("users").doc(session.user.id).get(),
+    db.collection("bookings").where("userId", "==", session.user.id).get(), // Sorting in JS to avoid index issues for now
+    db.collection("services").orderBy("name", "asc").get(),
   ])
+
+  const user = userDoc.exists ? userDoc.data() : null;
+
+  const bookings = bookingsSnapshot.docs.map(doc => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      date: new Date(data.date), // Convert string back to Date
+    }
+  }).sort((a: any, b: any) => b.date.getTime() - a.date.getTime()); // Sort desc
+
+  const services = servicesSnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  // Attach bookings to user object to match previous structure if needed, 
+  // or just pass bookings directly if I change the component usage.
+  // The component expects `user.bookings`.
+  if (user) {
+    user.bookings = bookings.map((booking: any) => {
+      // We need to attach the service details to the booking
+      const service = services.find((s: any) => s.id === booking.serviceId);
+      return {
+        ...booking,
+        service: service || { name: "Unknown", category: "Unknown" },
+      };
+    });
+  }
 
   if (!user) {
     redirect("/sign-in")

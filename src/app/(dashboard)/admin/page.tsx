@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation"
-import { prisma } from "@/lib/prisma"
 import { getCurrentSession } from "@/lib/session"
 import { AdminDashboard } from "@/components/dashboard/admin/admin-dashboard"
 
@@ -13,29 +12,34 @@ export default async function AdminDashboardPage() {
   startOfMonth.setDate(1)
   startOfMonth.setHours(0, 0, 0, 0)
 
-  const [bookingsThisMonth, activeClients, confirmedCount, totalBookings, users, bookings, services] = await Promise.all([
-    prisma.booking.count({ where: { date: { gte: startOfMonth } } }),
-    prisma.user.count(),
-    prisma.booking.count({ where: { status: "CONFIRMED" } }),
-    prisma.booking.count(),
-    prisma.user.findMany({
-      include: {
-        profile: true,
-        _count: { select: { bookings: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.booking.findMany({
-      include: {
-        user: true,
-        service: true,
-      },
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.service.findMany({
-      orderBy: { name: "asc" },
-    }),
+  const { db } = await import("@/lib/firebase-admin");
+
+  const [bookingsSnapshot, usersSnapshot, servicesSnapshot] = await Promise.all([
+    db.collection("bookings").orderBy("date", "desc").get(),
+    db.collection("users").orderBy("createdAt", "desc").get(),
+    db.collection("services").orderBy("name", "asc").get(),
   ])
+
+  const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), date: new Date(doc.data().date) }));
+  const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+  // Calculate stats
+  const bookingsThisMonth = bookings.filter((b: any) => b.date >= startOfMonth).length;
+  const activeClients = users.length; // Simplified
+  const confirmedCount = bookings.filter((b: any) => b.status === "CONFIRMED").length;
+  const totalBookings = bookings.length;
+
+  // Manual joins for bookings
+  const bookingsWithRelations = bookings.map((booking: any) => {
+    const user = users.find((u: any) => u.id === booking.userId);
+    const service = services.find((s: any) => s.id === booking.serviceId);
+    return {
+      ...booking,
+      user: user || { email: "Unknown", firstName: "Unknown", lastName: "" },
+      service: service || { name: "Unknown", price: 0 },
+    };
+  });
 
   const confirmationRate = totalBookings === 0 ? 0 : Math.round((confirmedCount / totalBookings) * 100)
 
@@ -45,13 +49,7 @@ export default async function AdminDashboardPage() {
     price: Number(service.price),
   }))
 
-  const bookingsWithSerializedData = bookings.map((booking) => ({
-    ...booking,
-    service: {
-      ...booking.service,
-      price: Number(booking.service.price),
-    },
-  }))
+  // const bookingsWithSerializedData = ...
 
   return (
     <AdminDashboard
@@ -59,7 +57,7 @@ export default async function AdminDashboardPage() {
       activeClients={activeClients}
       confirmationRate={confirmationRate}
       users={users}
-      bookings={bookingsWithSerializedData}
+      bookings={bookingsWithRelations}
       services={servicesWithNumberPrice}
     />
   )

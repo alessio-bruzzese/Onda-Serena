@@ -2,7 +2,6 @@
 
 import bcrypt from "bcryptjs"
 import { revalidatePath } from "next/cache"
-import { prisma } from "@/lib/prisma"
 import { signUpSchema, type SignUpValues } from "@/lib/validators/auth"
 
 export async function registerUser(values: SignUpValues) {
@@ -13,53 +12,56 @@ export async function registerUser(values: SignUpValues) {
 
   try {
     const { email, password, firstName, lastName, phone, termsAccepted, marketingOptOut } = parsed.data
-    const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase() } })
-    if (existing) {
+
+    const { db } = await import("@/lib/firebase-admin");
+    const existingSnapshot = await db.collection("users").where("email", "==", email.toLowerCase()).get();
+
+    if (!existingSnapshot.empty) {
       return { error: "Un compte existe déjà avec cet email." }
     }
 
     const passwordHash = await bcrypt.hash(password, 12)
 
-    const user = await prisma.user.create({
-      data: {
-        email: email.toLowerCase(),
-        passwordHash,
-        firstName,
-        lastName,
-        phone,
-        role: "CLIENT",
-        termsAccepted: termsAccepted ?? false,
-        marketingOptOut: marketingOptOut ?? false,
-        profile: {
-          create: {
-            preferences: "",
-            lifestyleNotes: "",
-            favoriteServices: [],
-            tags: [],
-          },
-        },
-      },
-    })
+    const newUserRef = db.collection("users").doc();
+    await newUserRef.set({
+      email: email.toLowerCase(),
+      passwordHash,
+      firstName,
+      lastName,
+      phone,
+      role: "CLIENT",
+      termsAccepted: termsAccepted ?? false,
+      marketingOptOut: marketingOptOut ?? false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      // Profile fields
+      preferences: "",
+      lifestyleNotes: "",
+      favoriteServices: [],
+      tags: [],
+    });
+
+    const userId = newUserRef.id;
 
     revalidatePath("/sign-in")
     return {
       success: "Compte créé, vous pouvez vous connecter.",
-      userId: user.id,
+      userId: userId,
     }
   } catch (error) {
     console.error("Erreur lors de l'inscription:", error)
-    
+
     // Vérifier si c'est une erreur de connexion à la base de données
     const isDatabaseError =
       (error && typeof error === "object" && "code" in error && error.code === "P1001") ||
       (error instanceof Error && error.message.includes("Can't reach database server"))
-    
+
     if (isDatabaseError) {
       return {
         error: "Impossible de se connecter à la base de données. Veuillez vérifier votre configuration DATABASE_URL dans le fichier .env",
       }
     }
-    
+
     return {
       error: "Une erreur est survenue lors de la création du compte. Veuillez réessayer.",
     }

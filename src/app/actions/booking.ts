@@ -1,7 +1,6 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { prisma } from "@/lib/prisma"
 import { getCurrentSession } from "@/lib/session"
 
 export async function cancelBooking(bookingId: string) {
@@ -11,25 +10,27 @@ export async function cancelBooking(bookingId: string) {
     }
 
     try {
-        const booking = await prisma.booking.findUnique({
-            where: { id: bookingId },
-        })
+        const { db } = await import("@/lib/firebase-admin");
+        const bookingRef = db.collection("bookings").doc(bookingId);
+        const bookingDoc = await bookingRef.get();
 
-        if (!booking) {
+        if (!bookingDoc.exists) {
             return { error: "Réservation non trouvée" }
         }
 
-        if (booking.userId !== session.user.id) {
+        const booking = bookingDoc.data();
+
+        if (booking?.userId !== session.user.id) {
             return { error: "Non autorisé" }
         }
 
-        if (booking.status === "CANCELLED") {
+        if (booking?.status === "CANCELLED") {
             return { error: "Réservation déjà annulée" }
         }
 
-        await prisma.booking.update({
-            where: { id: bookingId },
-            data: { status: "CANCELLED" },
+        await bookingRef.update({
+            status: "CANCELLED",
+            updatedAt: new Date().toISOString(),
         })
 
         revalidatePath("/dashboard")

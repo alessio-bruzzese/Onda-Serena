@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import { prisma } from "@/lib/prisma"
 import { getCurrentSession } from "@/lib/session"
 import { bookingStatusSchema } from "@/lib/validators/booking"
 import {
@@ -40,10 +39,11 @@ export async function updateBookingStatus(formData: FormData | Record<string, un
     return { error: "Statut invalide." }
   }
 
-  await prisma.booking.update({
-    where: { id: parsed.data.bookingId },
-    data: { status: parsed.data.status },
-  })
+  const { db } = await import("@/lib/firebase-admin");
+  await db.collection("bookings").doc(parsed.data.bookingId).update({
+    status: parsed.data.status,
+    updatedAt: new Date().toISOString(),
+  });
 
   revalidatePath("/admin")
   revalidatePath("/client")
@@ -71,10 +71,12 @@ export async function updateBooking(formData: FormData | Record<string, unknown>
 
   const { bookingId, ...updateData } = parsed.data
 
-  await prisma.booking.update({
-    where: { id: bookingId },
-    data: updateData,
-  })
+  const { db } = await import("@/lib/firebase-admin");
+  await db.collection("bookings").doc(bookingId).update({
+    ...updateData,
+    date: updateData.date ? new Date(updateData.date).toISOString() : undefined,
+    updatedAt: new Date().toISOString(),
+  });
 
   revalidatePath("/admin")
   revalidatePath("/client")
@@ -92,9 +94,8 @@ export async function deleteBooking(formData: FormData | Record<string, unknown>
     return { error: "ID de réservation invalide." }
   }
 
-  await prisma.booking.delete({
-    where: { id: bookingId },
-  })
+  const { db } = await import("@/lib/firebase-admin");
+  await db.collection("bookings").doc(bookingId).delete();
 
   revalidatePath("/admin")
   revalidatePath("/client")
@@ -124,24 +125,27 @@ export async function updateUser(formData: FormData | Record<string, unknown>) {
 
   const { userId, ...updateData } = parsed.data
 
+  const { db } = await import("@/lib/firebase-admin");
+
   // Check if email is being changed and if it's already taken
   if (updateData.email) {
-    const existing = await prisma.user.findFirst({
-      where: {
-        email: updateData.email.toLowerCase(),
-        NOT: { id: userId },
-      },
-    })
-    if (existing) {
-      return { error: "Cet email est déjà utilisé." }
+    const existingSnapshot = await db.collection("users")
+      .where("email", "==", updateData.email.toLowerCase())
+      .get();
+
+    if (!existingSnapshot.empty) {
+      const existingUser = existingSnapshot.docs[0];
+      if (existingUser.id !== userId) {
+        return { error: "Cet email est déjà utilisé." }
+      }
     }
     updateData.email = updateData.email.toLowerCase()
   }
 
-  await prisma.user.update({
-    where: { id: userId },
-    data: updateData,
-  })
+  await db.collection("users").doc(userId).update({
+    ...updateData,
+    updatedAt: new Date().toISOString(),
+  });
 
   revalidatePath("/admin")
   return { success: "Utilisateur mis à jour." }
@@ -164,9 +168,8 @@ export async function deleteUser(formData: FormData | Record<string, unknown>) {
     return { error: "Vous ne pouvez pas supprimer votre propre compte." }
   }
 
-  await prisma.user.delete({
-    where: { id: userId },
-  })
+  const { db } = await import("@/lib/firebase-admin");
+  await db.collection("users").doc(userId).delete();
 
   revalidatePath("/admin")
   return { success: "Utilisateur supprimé." }
@@ -193,17 +196,23 @@ export async function createService(formData: FormData | Record<string, unknown>
     return { error: "Données invalides." }
   }
 
+  const { db } = await import("@/lib/firebase-admin");
+
   // Check if service name already exists
-  const existing = await prisma.service.findUnique({
-    where: { name: parsed.data.name },
-  })
-  if (existing) {
+  const existingSnapshot = await db.collection("services")
+    .where("name", "==", parsed.data.name)
+    .get();
+
+  if (!existingSnapshot.empty) {
     return { error: "Un service avec ce nom existe déjà." }
   }
 
-  await prisma.service.create({
-    data: parsed.data,
-  })
+  await db.collection("services").add({
+    ...parsed.data,
+    price: Number(parsed.data.price),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
 
   revalidatePath("/admin")
   revalidatePath("/client")
@@ -233,23 +242,27 @@ export async function updateService(formData: FormData | Record<string, unknown>
 
   const { serviceId, ...updateData } = parsed.data
 
+  const { db } = await import("@/lib/firebase-admin");
+
   // Check if service name is being changed and if it's already taken
   if (updateData.name) {
-    const existing = await prisma.service.findFirst({
-      where: {
-        name: updateData.name,
-        NOT: { id: serviceId },
-      },
-    })
-    if (existing) {
-      return { error: "Un service avec ce nom existe déjà." }
+    const existingSnapshot = await db.collection("services")
+      .where("name", "==", updateData.name)
+      .get();
+
+    if (!existingSnapshot.empty) {
+      const existingService = existingSnapshot.docs[0];
+      if (existingService.id !== serviceId) {
+        return { error: "Un service avec ce nom existe déjà." }
+      }
     }
   }
 
-  await prisma.service.update({
-    where: { id: serviceId },
-    data: updateData,
-  })
+  await db.collection("services").doc(serviceId).update({
+    ...updateData,
+    price: Number(updateData.price),
+    updatedAt: new Date().toISOString(),
+  });
 
   revalidatePath("/admin")
   revalidatePath("/client")
@@ -267,18 +280,19 @@ export async function deleteService(formData: FormData | Record<string, unknown>
     return { error: "ID de service invalide." }
   }
 
-  // Check if service has bookings
-  const bookingsCount = await prisma.booking.count({
-    where: { serviceId },
-  })
+  const { db } = await import("@/lib/firebase-admin");
 
-  if (bookingsCount > 0) {
+  // Check if service has bookings
+  const bookingsSnapshot = await db.collection("bookings")
+    .where("serviceId", "==", serviceId)
+    .limit(1)
+    .get();
+
+  if (!bookingsSnapshot.empty) {
     return { error: "Impossible de supprimer un service avec des réservations." }
   }
 
-  await prisma.service.delete({
-    where: { id: serviceId },
-  })
+  await db.collection("services").doc(serviceId).delete();
 
   revalidatePath("/admin")
   revalidatePath("/client")
