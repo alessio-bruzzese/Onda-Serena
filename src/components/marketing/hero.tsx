@@ -6,10 +6,7 @@ import { Button } from "@/components/ui/button"
 export function HeroSection() {
   return (
     <div className="relative overflow-hidden bg-transparent text-[#1a1a1a]">
-      <div className="pointer-events-none absolute inset-0 opacity-30">
-        <div className="absolute -left-10 top-10 h-64 w-64 rounded-full bg-[#E9B676] blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-[#A6CFE3] blur-3xl" />
-      </div>
+
 
       <section className="relative z-10 mx-auto flex max-w-6xl flex-col gap-16 px-6 py-20 md:px-12 lg:flex-row lg:items-center">
         <div className="flex-1 space-y-8">
@@ -20,7 +17,7 @@ export function HeroSection() {
             <p className="text-sm uppercase tracking-[0.3em] text-[#1a1a1a]/70 font-body">
               Votre tranquillité, notre mission
             </p>
-            <h1 className="text-4xl font-light leading-tight text-[#1a1a1a] md:text-5xl lg:text-6xl">
+            <h1 className="text-4xl leading-tight text-[#001F3F] font-heading-alt md:text-5xl lg:text-6xl">
               La conciergerie de confiance sur la Côte Bleue
             </h1>
             <p className="text-lg text-[#1a1a1a]/80 md:text-xl font-body">

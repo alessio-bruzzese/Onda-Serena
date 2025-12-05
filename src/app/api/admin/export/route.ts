@@ -168,7 +168,7 @@ export async function GET(request: NextRequest) {
     console.error("Export error:", error)
     return NextResponse.json({ error: "Erreur lors de l'export" }, { status: 500 })
   }
-}
+} 
 
 function convertToCSV(data: unknown): string {
   if (Array.isArray(data)) {

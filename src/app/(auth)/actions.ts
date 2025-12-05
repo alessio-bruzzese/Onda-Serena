@@ -65,9 +65,15 @@ export async function registerUser(values: SignUpValues) {
       (error instanceof Error && error.message.includes("Can't reach database server"))
 
     if (isDatabaseError) {
+      console.error("Database connection error during registration:", error);
       return {
         error: "Impossible de se connecter à la base de données. Veuillez vérifier votre configuration DATABASE_URL dans le fichier .env",
       }
+    }
+
+    if (error instanceof Error) {
+      console.error("Registration error message:", error.message);
+      console.error("Registration error stack:", error.stack);
     }
 
     return {

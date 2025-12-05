@@ -6,12 +6,16 @@ import { getAuth } from "firebase-admin/auth";
 // const serviceAccount = require("../../service-account.json");
 
 const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY
-    ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
+    ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY.replace(/\n/g, "\\n"))
     : undefined;
+
+if (!serviceAccount) {
+    console.error("FIREBASE_SERVICE_ACCOUNT_KEY is missing. Authentication will fail.");
+}
 
 const app = !getApps().length
     ? initializeApp({
-        credential: cert(serviceAccount),
+        credential: serviceAccount ? cert(serviceAccount) : undefined,
     })
     : getApp();
 

@@ -152,7 +152,7 @@
 
   body {
     @apply bg-background text-foreground;
-    background-image: linear-gradient(to bottom, #CAE3F0 0%, #F5F9FC 50%, #F5E9D4 100%);
+    background-image: linear-gradient(to bottom, #F5E9D4 70%, #CAE3F0 100%);
     background-repeat: no-repeat;
     min-height: 100vh;
     font-family: var(--font-lato), sans-serif;

@@ -27,34 +27,43 @@ const providers = [
       password: { label: "Password", type: "password" },
     },
     async authorize(credentials) {
-      const parsed = signInSchema.safeParse(credentials)
-      if (!parsed.success) {
-        return null
-      }
+      try {
+        const parsed = signInSchema.safeParse(credentials)
+        if (!parsed.success) {
+          console.error("Invalid credentials format:", parsed.error);
+          return null
+        }
 
-      const { db } = await import("@/lib/firebase-admin");
-      const usersRef = db.collection("users");
-      const snapshot = await usersRef.where("email", "==", parsed.data.email.toLowerCase()).get();
+        const { db } = await import("@/lib/firebase-admin");
+        const usersRef = db.collection("users");
+        const snapshot = await usersRef.where("email", "==", parsed.data.email.toLowerCase()).get();
 
-      if (snapshot.empty) {
+        if (snapshot.empty) {
+          console.warn("User not found:", parsed.data.email);
+          return null;
+        }
+
+        const userDoc = snapshot.docs[0];
+        const user = userDoc.data();
+
+        if (!user || !user.passwordHash) {
+          console.warn("User has no password hash or data is missing:", parsed.data.email);
+          return null
+        }
+        const isValid = await bcrypt.compare(parsed.data.password, user.passwordHash)
+        if (!isValid) {
+          console.warn("Invalid password for user:", parsed.data.email);
+          return null
+        }
+        return {
+          id: userDoc.id,
+          email: user.email,
+          name: [user.firstName, user.lastName].filter(Boolean).join(" ") || undefined,
+          role: user.role,
+        }
+      } catch (error) {
+        console.error("Error in credentials authorize:", error);
         return null;
-      }
-
-      const userDoc = snapshot.docs[0];
-      const user = userDoc.data();
-
-      if (!user || !user.passwordHash) {
-        return null
-      }
-      const isValid = await bcrypt.compare(parsed.data.password, user.passwordHash)
-      if (!isValid) {
-        return null
-      }
-      return {
-        id: userDoc.id,
-        email: user.email,
-        name: [user.firstName, user.lastName].filter(Boolean).join(" ") || undefined,
-        role: user.role,
       }
     },
   }),

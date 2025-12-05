@@ -8,7 +8,7 @@ import { LeadMagnetForm } from "@/components/marketing/lead-magnet"
 
 export default function LandingPage() {
   return (
-    <div style={{ background: "linear-gradient(to bottom, #CAE3F0 0%, #F5E9D4 50%, #CAE3F0 100%)", minHeight: "100vh" }}>
+    <div className="min-h-screen">
       <HeroSection />
       <ServicesShowcase />
       <TestimonialsSection />
