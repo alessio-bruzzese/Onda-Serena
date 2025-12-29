@@ -70,6 +70,7 @@ export function HeroSection() {
             </div>
             <div className="space-y-4">
               {[
+                "Mise en ligne de l'annonce",
                 "Check-in/out professionnel",
                 "Ménage et linge soigné",
                 "Maintenance réactive",
@@ -85,7 +86,7 @@ export function HeroSection() {
               </div>
               <div className="font-body">
                 <p className="font-medium">Contactez-nous</p>
-                <p className="text-[#1a1a1a]/70">+33 (0)X XX XX XX XX</p>
+                <p className="text-[#1a1a1a]/70">06 72 18 73 13</p>
               </div>
             </div>
           </div>
