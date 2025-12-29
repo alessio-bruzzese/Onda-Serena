@@ -38,7 +38,7 @@ export function ServicesShowcase() {
           </Badge>
           <div className="space-y-4">
             <h2 className="text-3xl font-light md:text-5xl font-heading-alt text-[#1C1917]">
-              Des offres diversifiées pour répondre à tout vos besoins
+              Des offres diversifiées pour répondre à tous vos besoins
             </h2>
             <p className="text-lg text-[#1C1917]/60 font-body max-w-2xl mx-auto leading-relaxed">
               Nous prenons en charge tous les aspects de la gestion de votre location saisonnière,
