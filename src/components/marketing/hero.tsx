@@ -22,7 +22,7 @@ export function HeroSection() {
             </h1>
             <p className="text-lg text-[#1a1a1a]/80 md:text-xl font-body">
               Nous aidons les propriétaires à rentabiliser leur bien sans les tracas de la gestion.
-              Gestion complète, décoration et services voyageurs pour maximiser vos revenus locatifs.
+              Nous vous proposons une gestion complète de la mise en ligne de l'annonce jusqu'à la décoration de votre bien pour maximiser au mieux vos revenus locatifs.
             </p>
           </div>
 
