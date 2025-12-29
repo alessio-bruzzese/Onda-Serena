@@ -7,7 +7,7 @@ const storySections = [
   {
     icon: <History className="h-6 w-6 text-[#E9B676]" />,
     title: "Notre Genèse",
-    content: "ONDA SERENA est née d'une reconversion professionnelle et d'un projet familial ancré dans les valeurs de la Côte Bleue. Après des années dans un autre secteur, nous avons choisi de nous reconvertir pour créer une conciergerie qui allie digital et humain.",
+    content: "ONDA SERENA est le fruit d'un projet familial ancré dans les valeurs de la région. Également propriétaire d'un bien sur la Côte Bleue, nous avons à coeur de partager notre expérience locale.",
   },
   {
     icon: <Target className="h-6 w-6 text-[#A6CFE3]" />,
@@ -48,7 +48,7 @@ const equipe = [
   {
     name: "Équipe ONDA SERENA",
     role: "Fondateurs",
-    description: "Une reconversion professionnelle et un projet familial au service de la Côte Bleue.",
+    description: "",
   },
 ]
 
@@ -107,7 +107,6 @@ export default function AProposPage() {
           </div>
 
           <div className="mb-16">
-            <h2 className="text-3xl font-light mb-8 text-center font-heading-alt">L&apos;Équipe</h2>
             <div className="rounded-[32px] border-2 border-[#A6CFE3]/30 bg-gradient-to-br from-[#A6CFE3]/10 to-transparent p-8">
               <div className="text-center">
                 <div className="mb-6 flex justify-center">

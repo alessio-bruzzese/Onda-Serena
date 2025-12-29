@@ -11,22 +11,16 @@ const services = [
     icon: <Gift className="h-6 w-6 text-[#E9B676]" />,
   },
   {
-    title: "Réservations nautiques",
+    title: "Activités locales",
     description:
-      "Conciergerie privée pour réserver vos activités : location de bateaux, plongée, paddle, voile. Nous gérons toutes les réservations.",
+      "Nous nous chargeons de réserver pour vos clients des activités nautiques, des expériences dégustations ... Nous proposons également des visites guidées sur des parcours de randonnées des calanques.",
     icon: <Anchor className="h-6 w-6 text-[#A6CFE3]" />,
   },
   {
     title: "Recommandations gastronomiques",
     description:
-      "Guide personnalisé des meilleurs restaurants, bars à vin et adresses secrètes de la Côte Bleue. Réservations en notre nom.",
+      "Guide personnalisé des meilleurs restaurants, bars à vin et adresses secrètes de la Côte Bleue.",
     icon: <Utensils className="h-6 w-6 text-[#E9B676]" />,
-  },
-  {
-    title: "Conciergerie locale",
-    description:
-      "Besoin d'un service particulier ? Nous organisons tout : transport, baby-sitting, cours de cuisine, visites guidées...",
-    icon: <MapPin className="h-6 w-6 text-[#A6CFE3]" />,
   },
 ]
 
@@ -53,7 +47,8 @@ export default function ExperienceVoyageurPage() {
             {services.map((service, index) => (
               <Card
                 key={index}
-                className="border-[#A8A8A8]/20 bg-white shadow-lg hover:shadow-xl transition-shadow"
+                className={`border-[#A8A8A8]/20 bg-white shadow-lg hover:shadow-xl transition-shadow ${index === 2 ? "md:col-span-2 md:w-[calc(50%-0.75rem)] md:justify-self-center" : ""
+                  }`}
               >
                 <CardHeader>
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full border-2 border-[#A6CFE3]/30 bg-[#A6CFE3]/10">

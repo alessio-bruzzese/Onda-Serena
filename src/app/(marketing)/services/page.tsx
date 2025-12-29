@@ -94,7 +94,7 @@ export default function ServicesPage() {
               </div>
 
               <div className="mt-12 pt-8 border-t border-[#1C1917]/10 text-sm text-[#1C1917]/60 font-body">
-                Ces services additionnels sont disponibles en option ou inclus dans la Formula Prestigio.
+                Ces services additionnels sont disponibles en option.
                 Contactez-nous pour un devis personnalisé.
               </div>
             </div>

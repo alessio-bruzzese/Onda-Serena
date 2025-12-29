@@ -9,42 +9,37 @@ import { useSession } from "next-auth/react"
 
 const forfaits = [
     {
-        name: "Formula Essenziale",
-        price: "18%",
-        description: "Gestion basique",
+        name: "Formule Essentielle",
+        price: "20%",
+        description: "Standard",
         features: [
+            "Mise en ligne de l'annonce",
             "Check-in/out",
-            "Ménage professionnel",
-            "Linge soigné",
+            "Ménage professionnel / Linge soigné",
             "Maintenance réactive",
-            "Support client",
+            "Support 24/7",
         ],
         popular: false,
     },
     {
-        name: "Formula Serena",
-        price: "20%",
-        description: "Standard",
+        name: "Formule Premium",
+        price: "25%",
+        description: "Haut de gamme",
         features: [
-            "Tout de la Formula Essenziale",
-            "Optimisation tarifaire",
-            "Gestion des réservations",
-            "Reporting mensuel",
-            "Support prioritaire",
+            "Tout de la Formule Essentielle",
+            "Tarification dynamique",
+            "Kits d'accueil avec produits locaux",
+            "Gestion des réservations des activités auprès de nos partenaires",
         ],
         popular: true,
     },
     {
-        name: "Formula Prestigio",
-        price: "25%",
-        description: "Premium/Luxe",
+        name: "Nos prestations à la demande",
+        price: "Sur devis",
+        description: "",
         features: [
-            "Tout de la Formula Serena",
-            "Service décoration inclus",
+            "Forfait décoration",
             "Aménagement du bien",
-            "Conciergerie voyageurs premium",
-            "Gestionnaire dédié",
-            "Support 24/7",
         ],
         popular: false,
     },
@@ -92,7 +87,7 @@ export function PricingSection() {
                                     : "bg-transparent border border-[#1C1917]/20 text-[#1C1917] hover:bg-[#1C1917] hover:text-white"
                                     }`}
                             >
-                                Choisir cette formule
+                                Choisir cette prestation
                             </Button>
                         </Link>
                     </CardContent>
