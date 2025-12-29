@@ -8,23 +8,23 @@ const services = [
   {
     title: "Gestion complète",
     description:
-      "Check-in/out professionnel, ménage soigné, linge de qualité et maintenance réactive pour votre bien.",
+      "Mise en ligne de l'annonce, check-in/out professionnel, ménage soigné, linge de qualité et maintenance réactive pour votre bien.",
     badge: "Essentiel",
     icon: <Home className="h-5 w-5 text-[#1C1917]" />,
   },
   {
-    title: "Décoration & Aménagement",
-    description:
-      "Forfait décoration pour transformer votre bien et augmenter sa valeur locative. Design sur-mesure.",
-    badge: "Premium",
-    icon: <Sparkles className="h-5 w-5 text-[#D4AF37]" />,
-  },
-  {
     title: "Services Voyageurs",
     description:
-      "Kits d'accueil avec produits locaux, conciergerie privée et réservations d'activités nautiques.",
+      "Kits d'accueil avec produits locaux, et services de réservations d'activités auprès de nos partenaires.",
     badge: "Expérience",
     icon: <ShieldCheck className="h-5 w-5 text-[#1C1917]" />,
+  },
+  {
+    title: "Décoration & Aménagement",
+    description:
+      "Forfait décoration pour transformer votre bien et augmenter sa valeur locative.",
+    badge: "Premium",
+    icon: <Sparkles className="h-5 w-5 text-[#D4AF37]" />,
   },
 ]
 

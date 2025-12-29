@@ -34,7 +34,7 @@ const pillars = [
   {
     icon: <Globe2 className="h-5 w-5 text-[#A6CFE3]" />,
     title: "Engagement écologique",
-    description: "Tri sélectif, gestion de l'eau, produits locaux. Nous respectons l'environnement de la Côte Bleue.",
+    description: "Tri sélectif, produits ménagers écologiques, distributeurs rechargeables. Nous respectons l'environnement de la Côte Bleue.",
   },
 ]
 
