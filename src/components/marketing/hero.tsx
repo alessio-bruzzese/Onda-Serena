@@ -21,8 +21,8 @@ export function HeroSection() {
               La conciergerie de confiance sur la Côte Bleue
             </h1>
             <p className="text-lg text-[#1a1a1a]/80 md:text-xl font-body">
-              Nous aidons les propriétaires à rentabiliser leur bien sans les tracas de la gestion.
-              Nous vous proposons une gestion complète de la mise en ligne de l'annonce jusqu'à la décoration de votre bien pour maximiser au mieux vos revenus locatifs.
+              Nous aidons les propriétaires à rentabiliser leur bien sans les tracas de l'intendance.
+              Nous vous proposons une prise en charge complète de la mise en ligne de l'annonce jusqu'à la décoration de votre bien pour maximiser au mieux vos revenus locatifs.
             </p>
           </div>
 

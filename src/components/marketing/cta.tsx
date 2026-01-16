@@ -14,7 +14,7 @@ export function CTASection() {
         </h3>
         <p className="text-[#1a1a1a]/70 font-body max-w-2xl mx-auto">
           Découvrez nos conseils exclusifs pour maximiser vos revenus locatifs sur la Côte Bleue.
-          Stratégies de tarification, décoration, et gestion optimale.
+          Stratégies de tarification, décoration, et organisation optimale.
         </p>
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link href="#lead-magnet" className="w-full max-w-xs">

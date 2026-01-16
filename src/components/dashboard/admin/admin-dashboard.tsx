@@ -201,7 +201,7 @@ export function AdminDashboard({
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-body text-sm uppercase tracking-[0.3em] text-[#A8A8A8]">Gestion</p>
+                      <p className="font-body text-sm uppercase tracking-[0.3em] text-[#A8A8A8]">Suivi</p>
                       <CardTitle className="font-heading-alt text-2xl font-light text-[#1a1a1a]">Réservations récentes</CardTitle>
                     </div>
                     <Badge className="bg-[#A6CFE3]/20 text-[#1a1a1a] border border-[#A6CFE3]/40 font-body">{bookings.length} suivies</Badge>

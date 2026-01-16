@@ -41,7 +41,7 @@ export function ServicesShowcase() {
               Des offres diversifiées pour répondre à tous vos besoins
             </h2>
             <p className="text-lg text-[#1C1917]/60 font-body max-w-2xl mx-auto leading-relaxed">
-              Nous prenons en charge tous les aspects de la gestion de votre location saisonnière,
+              Nous prenons en charge tous les aspects de l'intendance de votre location saisonnière,
               de l&apos;accueil des voyageurs à la maintenance, en passant par la décoration et l&apos;aménagement.
             </p>
           </div>

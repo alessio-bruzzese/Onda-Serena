@@ -36,7 +36,7 @@ export default function ServicesPage() {
             </h1>
             <p className="text-lg text-[#1C1917]/60 font-body max-w-2xl mx-auto leading-relaxed">
               Des formules conçues pour votre tranquillité d&apos;esprit.
-              Une gestion transparente et haut de gamme.
+              Un accompagnement transparent et haut de gamme.
             </p>
           </div>
 

@@ -12,7 +12,7 @@ const storySections = [
   {
     icon: <Target className="h-6 w-6 text-[#A6CFE3]" />,
     title: "Notre Mission",
-    content: "Aider les propriétaires à rentabiliser leur bien sans les tracas de la gestion. Nous prenons en charge tous les aspects de la location saisonnière, de l'accueil des voyageurs à la maintenance, en passant par la décoration et l'aménagement.",
+    content: "Aider les propriétaires à rentabiliser leur bien sans les tracas de l'intendance. Nous prenons en charge tous les aspects de la location saisonnière, de l'accueil des voyageurs à la maintenance, en passant par la décoration et l'aménagement.",
   },
   {
     icon: <MapPin className="h-6 w-6 text-[#E9B676]" />,
@@ -22,7 +22,7 @@ const storySections = [
   {
     icon: <Fingerprint className="h-6 w-6 text-[#A6CFE3]" />,
     title: "Notre ADN",
-    content: "Conciergerie digitale mais humaine. Nous utilisons les outils modernes pour optimiser la gestion, mais chaque interaction reste personnalisée et chaleureuse. Chaque client est unique, et nous adaptons nos services à ses besoins spécifiques.",
+    content: "Conciergerie digitale mais humaine. Nous utilisons les outils modernes pour optimiser l'organisation, mais chaque interaction reste personnalisée et chaleureuse. Chaque client est unique, et nous adaptons nos services à ses besoins spécifiques.",
   },
 ]
 
@@ -40,7 +40,7 @@ const valeurs = [
   {
     icon: <Leaf className="h-6 w-6 text-[#A6CFE3]" />,
     title: "Engagement écologique",
-    description: "Respect de l'environnement : tri sélectif, gestion de l'eau, produits locaux et durables.",
+    description: "Respect de l'environnement : tri sélectif, maîtrise de l'eau, produits locaux et durables.",
   },
 ]
 
@@ -126,7 +126,7 @@ export default function AProposPage() {
           <div className="rounded-[32px] border-2 border-[#E9B676]/30 bg-gradient-to-br from-[#E9B676]/10 to-transparent p-8 text-center">
             <h2 className="text-2xl font-light mb-4 font-heading-alt">Rejoignez-nous</h2>
             <p className="text-[#1a1a1a]/80 font-body mb-6">
-              Vous souhaitez faire confiance à ONDA SERENA pour la gestion de votre bien ?
+              Vous souhaitez faire confiance à ONDA SERENA pour l'intendance de votre bien ?
               Contactez-nous pour un rendez-vous personnalisé.
             </p>
             <a

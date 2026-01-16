@@ -90,7 +90,7 @@ export function BookingsManagement({ initialBookings }: Props) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-heading-alt text-2xl font-light text-[#1a1a1a]">Gestion des réservations</h2>
+          <h2 className="font-heading-alt text-2xl font-light text-[#1a1a1a]">Administration des réservations</h2>
           <p className="font-body text-[#1a1a1a]/70">Modifier et supprimer les réservations</p>
         </div>
         <div className="flex gap-2">

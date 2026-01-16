@@ -32,7 +32,7 @@ const articles = [
   {
     title: "Optimiser ses revenus locatifs sur la Côte Bleue",
     excerpt:
-      "Stratégies de tarification, gestion de la saisonnalité et conseils pour maximiser vos revenus tout au long de l'année.",
+      "Stratégies de tarification, maîtrise de la saisonnalité et conseils pour maximiser vos revenus tout au long de l'année.",
     category: "Conseils propriétaires",
     date: "1 mars 2024",
     slug: "optimiser-revenus-locatifs",

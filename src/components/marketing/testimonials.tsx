@@ -5,7 +5,7 @@ const testimonials = [
   {
     name: "Marie D.",
     location: "Propriétaire à Carry-le-Rouet",
-    text: "ONDA SERENA a transformé ma location. Leur gestion est impeccable et mes revenus ont augmenté de 35% la première année. Je recommande vivement !",
+    text: "ONDA SERENA a transformé ma location. Leur service est impeccable et mes revenus ont augmenté de 35% la première année. Je recommande vivement !",
     rating: 5,
   },
   {

@@ -90,7 +90,7 @@ export function LeadMagnetForm() {
                 />
                 <Label htmlFor="consent" className="text-sm text-[#1a1a1a]/70 font-body leading-relaxed cursor-pointer">
                   J&apos;accepte que mes données soient utilisées pour recevoir le guide et être contacté par ONDA SERENA
-                  concernant mes besoins en gestion locative. Conformément au RGPD, je peux retirer mon consentement à tout moment.
+                  concernant mes besoins en services locatifs. Conformément au RGPD, je peux retirer mon consentement à tout moment.
                 </Label>
               </div>
               <Button

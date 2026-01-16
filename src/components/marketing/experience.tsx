@@ -48,7 +48,7 @@ export function ExperienceSection() {
               Résultats concrets
             </p>
             <h3 className="text-3xl font-light leading-tight md:text-4xl">
-              Une gestion optimisée pour maximiser vos revenus locatifs
+              Une organisation optimisée pour maximiser vos revenus locatifs
             </h3>
             <p className="text-[#1a1a1a]/70 font-body">
               Notre expertise de la Côte Bleue et notre réseau local nous permettent d&apos;optimiser
