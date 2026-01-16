@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useSession, signOut } from "next-auth/react"
 import { Menu, X, LogOut } from "lucide-react"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 
@@ -22,7 +23,12 @@ export function Header() {
   const dashboardUrl = (session?.user as { role?: string })?.role === "ADMIN" ? "/admin" : "/dashboard"
 
   return (
-    <header className="sticky top-4 z-50 mx-auto w-[95%] max-w-7xl border border-[#A8A8A8]/20 bg-[#b8a388]/60 backdrop-blur-md rounded-full shadow-lg overflow-hidden">
+    <header
+      className={cn(
+        "sticky top-4 z-50 mx-auto w-[95%] max-w-7xl border border-[#A8A8A8]/20 bg-[#b8a388]/60 backdrop-blur-md shadow-lg overflow-hidden transition-all duration-300",
+        mobileMenuOpen ? "rounded-[2rem]" : "rounded-full"
+      )}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12">
         <Link href="/" className="flex items-center gap-3 text-lg font-semibold tracking-tight hover:opacity-80 transition">
           <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#1a1a1a] bg-white overflow-hidden">
