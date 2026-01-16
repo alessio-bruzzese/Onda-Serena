@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { useSession, signOut } from "next-auth/react"
 import { Menu, X, LogOut } from "lucide-react"
@@ -7,6 +6,7 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import { motion, AnimatePresence } from "framer-motion"
 
 const navLinks = [
   { label: "Accueil", href: "/" },
@@ -23,10 +23,16 @@ export function Header() {
   const dashboardUrl = (session?.user as { role?: string })?.role === "ADMIN" ? "/admin" : "/dashboard"
 
   return (
-    <header
+    <motion.header
+      layout
+      initial={{ borderRadius: 9999 }}
+      animate={{
+        borderRadius: mobileMenuOpen ? 32 : 9999,
+        height: mobileMenuOpen ? "auto" : "80px", // Approximate height of closed header
+      }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className={cn(
-        "sticky top-4 z-50 mx-auto w-[95%] max-w-7xl border border-[#A8A8A8]/20 bg-[#b8a388]/60 backdrop-blur-md shadow-lg overflow-hidden transition-all duration-300",
-        mobileMenuOpen ? "rounded-[2rem]" : "rounded-full"
+        "sticky top-4 z-50 mx-auto w-[95%] max-w-7xl border border-[#A8A8A8]/20 bg-[#b8a388]/60 backdrop-blur-md shadow-lg overflow-hidden"
       )}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-12">
@@ -105,9 +111,15 @@ export function Header() {
       </div >
 
       {/* Menu mobile */}
-      {
-        mobileMenuOpen && (
-          <div className="lg:hidden border-t border-[#A8A8A8]/20 bg-white">
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className="lg:hidden border-t border-[#A8A8A8]/20 bg-white"
+          >
             <nav className="mx-auto max-w-7xl px-6 py-4 space-y-4">
               {navLinks.map((link) => (
                 <Link
@@ -159,10 +171,10 @@ export function Header() {
                 )}
               </div>
             </nav>
-          </div>
-        )
-      }
-    </header >
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.header>
   )
 }
 
