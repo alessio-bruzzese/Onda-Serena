@@ -4,40 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Footer } from "@/components/marketing/footer"
 import { Calendar } from "lucide-react"
 
-const articles = [
-  {
-    title: "Les meilleures plages de la Côte Bleue",
-    excerpt:
-      "Découvrez notre sélection des plus belles plages de la Côte Bleue, des criques secrètes aux grandes plages de sable fin.",
-    category: "Vie locale",
-    date: "15 mars 2024",
-    slug: "meilleures-plages-cote-bleue",
-  },
-  {
-    title: "Comment décorer son bien pour Airbnb",
-    excerpt:
-      "Conseils pratiques pour transformer votre location saisonnière et augmenter sa valeur locative grâce à une décoration soignée.",
-    category: "Conseils propriétaires",
-    date: "10 mars 2024",
-    slug: "decorer-bien-airbnb",
-  },
-  {
-    title: "Étude de cas : Avant / Après décoration",
-    excerpt:
-      "Découvrez comment nous avons transformé un appartement de 50m² en un écrin de charme qui a vu ses revenus locatifs augmenter de 40%.",
-    category: "Études de cas",
-    date: "5 mars 2024",
-    slug: "etude-cas-avant-apres",
-  },
-  {
-    title: "Optimiser ses revenus locatifs sur la Côte Bleue",
-    excerpt:
-      "Stratégies de tarification, maîtrise de la saisonnalité et conseils pour maximiser vos revenus tout au long de l'année.",
-    category: "Conseils propriétaires",
-    date: "1 mars 2024",
-    slug: "optimiser-revenus-locatifs",
-  },
-]
+import { blogPosts } from "@/data/blog-posts"
 
 export default function BlogPage() {
   return (
@@ -58,7 +25,7 @@ export default function BlogPage() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-            {articles.map((article, index) => (
+            {blogPosts.map((article, index) => (
               <Card
                 key={index}
                 className="border-[#A8A8A8]/20 bg-white shadow-md hover:shadow-xl transition-shadow"
