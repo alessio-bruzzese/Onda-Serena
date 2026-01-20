@@ -44,10 +44,7 @@ export function HeroSection() {
           </div>
 
           <div className="flex flex-wrap gap-6 border-t border-b border-[#A8A8A8]/30 py-6 text-sm text-[#1a1a1a]/70 font-body">
-            <div>
-              <p className="text-3xl font-light text-[#1a1a1a]">+50</p>
-              <p>Biens gérés avec succès</p>
-            </div>
+
             <div>
               <p className="text-3xl font-light text-[#1a1a1a]">24/7</p>
               <p>Disponibilité conciergerie</p>

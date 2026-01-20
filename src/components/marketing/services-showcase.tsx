@@ -6,17 +6,17 @@ import { Button } from "@/components/ui/button"
 
 const services = [
   {
-    title: "Gestion complète",
+    title: "Prise en charge du logement",
     description:
-      "Mise en ligne de l'annonce, check-in/out professionnel, ménage soigné, linge de qualité et maintenance réactive pour votre bien.",
+      "Check-in/out professionnel, ménage soigné, linge de qualité et maintenance réactive pour votre bien.",
     badge: "Essentielle",
     icon: <Home className="h-5 w-5 text-[#D4AF37]" />,
   },
   {
     title: "Services Voyageurs",
     description:
-      "Kits d'accueil avec produits locaux, et services de réservations d'activités auprès de nos partenaires.",
-    badge: "Premium",
+      "Kits d'accueil avec produits locaux, services de réservations d'activités auprès de nos partenaires, et livrets d'accueil dans chaque logement.",
+    badge: "Prestige",
     icon: <ShieldCheck className="h-5 w-5 text-[#D4AF37]" />,
   },
   {

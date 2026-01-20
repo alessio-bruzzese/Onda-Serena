@@ -22,7 +22,7 @@ const forfaits = [
     },
     {
         name: "Formule Prestige",
-        price: "25% ",
+        price: "20% HT",
         description: "Haut de gamme",
         features: [
             "Tout de la Formule Essentielle",

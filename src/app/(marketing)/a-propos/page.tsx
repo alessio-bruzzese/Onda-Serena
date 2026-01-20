@@ -48,7 +48,7 @@ const equipe = [
   {
     name: "Équipe ONDA SERENA",
     role: "Fondateurs",
-    description: "Paul BRUZZESE"
+    description: "Paul BRUZZESE - Fondateur - Dirigeant de la conciergerie\nAlessio BRUZZESE - Développeur - Chargé de projet digital"
   },
 ]
 
@@ -116,7 +116,7 @@ export default function AProposPage() {
                 </div>
                 <h3 className="text-2xl font-light mb-2 font-heading-alt">{equipe[0].name}</h3>
                 <p className="text-[#E9B676] font-body mb-4">{equipe[0].role}</p>
-                <p className="text-[#1a1a1a]/80 font-body max-w-2xl mx-auto">
+                <p className="text-[#1a1a1a]/80 font-body max-w-2xl mx-auto whitespace-pre-line">
                   {equipe[0].description}
                 </p>
               </div>

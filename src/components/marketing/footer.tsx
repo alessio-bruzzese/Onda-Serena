@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Instagram } from "lucide-react"
+import { Mail } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 
@@ -53,13 +53,11 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-4">
             <a
-              href="https://instagram.com/OndaSerena"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="mailto:conciergerie@onda-serena.com"
               className="flex items-center gap-2 text-[#1C1917]/70 hover:text-[#D4AF37] transition font-body"
             >
-              <Instagram className="h-5 w-5" />
-              <span>@OndaSerena</span>
+              <Mail className="h-5 w-5" />
+              <span>conciergerie@onda-serena.com</span>
             </a>
           </div>
           <div className="flex flex-wrap gap-2">

@@ -1,7 +1,8 @@
-import { Sparkles } from "lucide-react"
+import { Sparkles, Rocket, Leaf } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Footer } from "@/components/marketing/footer"
 import { PricingSection } from "@/components/marketing/pricing-section"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const prestations = [
   {
@@ -38,6 +39,48 @@ export default function ServicesPage() {
               Des formules conçues pour votre tranquillité d&apos;esprit.
               Un accompagnement transparent et haut de gamme.
             </p>
+          </div>
+
+          <div className="mx-auto w-full max-w-5xl mb-12 grid gap-8 md:grid-cols-2">
+            <Card className="border-[#D4AF37] bg-[#FAFAF9] shadow-md relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-[#D4AF37] text-white text-xs px-3 py-1 rounded-bl-lg font-body font-medium">
+                Obligatoire à la prise en charge
+              </div>
+              <CardHeader className="flex flex-row items-center gap-6 pb-2">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white border border-[#D4AF37]">
+                  <Rocket className="h-8 w-8 text-[#D4AF37]" />
+                </div>
+                <div>
+                  <CardTitle className="text-2xl font-heading-alt text-[#1C1917]">Pack Starter</CardTitle>
+                  <p className="text-xl font-light text-[#D4AF37] font-body">250€</p>
+                </div>
+              </CardHeader>
+              <CardContent className="text-[#1C1917]/70 font-body pl-[5.5rem]">
+                <p>
+                  Mise en ligne de l&apos;annonce, photos professionnelles du logement, et mise à disposition du linge de qualité hôtelière.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-[#A6CFE3] bg-[#F0F9FF] shadow-md relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-[#A6CFE3] text-[#1C1917] text-xs px-3 py-1 rounded-bl-lg font-body font-medium">
+                Obligatoire à la prise en charge
+              </div>
+              <CardHeader className="flex flex-row items-center gap-6 pb-2">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white border border-[#A6CFE3]">
+                  <Leaf className="h-8 w-8 text-[#A6CFE3]" />
+                </div>
+                <div>
+                  <CardTitle className="text-2xl font-heading-alt text-[#1C1917]">Pack Réapprovisionnement</CardTitle>
+                  <p className="text-xl font-light text-[#5C8CA5] font-body">10€ / mois</p>
+                </div>
+              </CardHeader>
+              <CardContent className="text-[#1C1917]/70 font-body pl-[5.5rem]">
+                <p>
+                  Fourniture de produits ménagers et d&apos;hygiène corporelle respectueux de l&apos;environnement pour le confort de vos voyageurs.
+                </p>
+              </CardContent>
+            </Card>
           </div>
 
           <PricingSection />
