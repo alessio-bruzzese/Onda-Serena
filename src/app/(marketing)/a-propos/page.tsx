@@ -48,7 +48,7 @@ const equipe = [
   {
     name: "Équipe ONDA SERENA",
     role: "Fondateurs",
-    description: "",
+    description: "Paul BRUZZESE"
   },
 ]
 

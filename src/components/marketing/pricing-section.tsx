@@ -10,10 +10,9 @@ import { useSession } from "next-auth/react"
 const forfaits = [
     {
         name: "Formule Essentielle",
-        price: "20%",
+        price: "18% HT",
         description: "Standard",
         features: [
-            "Mise en ligne de l'annonce",
             "Check-in/out",
             "Ménage professionnel / Linge soigné",
             "Maintenance réactive",
@@ -22,14 +21,16 @@ const forfaits = [
         popular: false,
     },
     {
-        name: "Formule Premium",
-        price: "25%",
+        name: "Formule Prestige",
+        price: "25% ",
         description: "Haut de gamme",
         features: [
             "Tout de la Formule Essentielle",
             "Tarification dynamique",
             "Kits d'accueil avec produits locaux",
-            "Gestion des réservations des activités auprès de nos partenaires",
+            "Rapport locatif mensuel",
+            "Livret d'accueil",
+            "Prise en charge des réservations des activités auprès de nos partenaires",
         ],
         popular: true,
     },

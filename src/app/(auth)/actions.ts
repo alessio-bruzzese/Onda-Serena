@@ -3,6 +3,7 @@
 import bcrypt from "bcryptjs"
 import { revalidatePath } from "next/cache"
 import { signUpSchema, type SignUpValues } from "@/lib/validators/auth"
+import { sendWelcomeEmail } from "@/lib/mail"
 
 export async function registerUser(values: SignUpValues) {
   const parsed = signUpSchema.safeParse(values)
@@ -44,12 +45,12 @@ export async function registerUser(values: SignUpValues) {
     const userId = newUserRef.id;
 
     // Send welcome email
-    // We don't await this to not block the response, or we can await if we want to ensure it sent.
-    // For better UX, we usually don't block, but for simplicity here we can await or just fire and forget.
-    // Let's fire and forget but catch errors to not crash.
-    import("@/lib/mail").then(({ sendWelcomeEmail }) => {
-      sendWelcomeEmail(email, firstName).catch(console.error);
-    });
+    try {
+      await sendWelcomeEmail(email, firstName)
+    } catch (emailError) {
+      console.error("Failed to send welcome email:", emailError)
+      // We don't block registration if email fails, but we log it
+    }
 
     revalidatePath("/sign-in")
     return {
