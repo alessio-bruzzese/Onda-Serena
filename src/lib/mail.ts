@@ -1,19 +1,14 @@
-import nodemailer from "nodemailer"
+import { Resend } from 'resend'
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_SERVER_HOST,
-  port: Number(process.env.EMAIL_SERVER_PORT) || 587,
-  auth: {
-    user: process.env.EMAIL_SERVER_USER,
-    pass: process.env.EMAIL_SERVER_PASSWORD,
-  },
-})
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "ONDA SERENA <ne-pas-repondre@onda-serena.com>"
 
 export async function sendWelcomeEmail(email: string, firstName: string) {
   try {
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || '"ONDA SERENA" <concierge@ondaserena.com>',
-      to: email,
+    const data = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: [email],
       subject: "Bienvenue chez ONDA SERENA",
       html: `
         <div style="font-family: sans-serif; color: #1a1a1a; max-width: 600px; margin: 0 auto;">
@@ -32,8 +27,9 @@ export async function sendWelcomeEmail(email: string, firstName: string) {
         </div>
       `,
     })
-    console.log("Welcome email sent:", info.messageId)
-    return { success: true }
+
+    console.log("Welcome email sent:", data.id)
+    return { success: true, data }
   } catch (error) {
     console.error("Error sending welcome email:", error)
     return { success: false, error }
