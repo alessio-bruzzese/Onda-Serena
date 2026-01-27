@@ -217,3 +217,43 @@ export async function sendNewsletter(subject: string, content: string, recipient
 
   return { success: true, successCount, errorCount }
 }
+
+export async function sendNewUserAdminNotification(user: { email: string, firstName: string | null, lastName: string | null, phone?: string | null }) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    return { success: false, error: "Missing API Key" }
+  }
+
+  const resend = new Resend(apiKey)
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: ["conciergerie@onda-serena.com"],
+      subject: "Nouvelle inscription sur Onda Serena",
+      html: `
+                <div style="font-family: sans-serif; color: #1a1a1a;">
+                    <h2>Nouvelle inscription</h2>
+                    <p>Un nouvel utilisateur vient de créer un compte :</p>
+                    <ul>
+                        <li><strong>Email :</strong> ${user.email}</li>
+                        <li><strong>Nom :</strong> ${user.firstName || ""} ${user.lastName || ""}</li>
+                        ${user.phone ? `<li><strong>Téléphone :</strong> ${user.phone}</li>` : ""}
+                        <li><strong>Date :</strong> ${new Date().toLocaleString("fr-FR")}</li>
+                    </ul>
+                </div>
+            `
+    })
+
+    if (error) {
+      console.error("Admin notification error:", error)
+      return { success: false, error }
+    }
+
+    console.log("Admin notification sent for:", user.email)
+    return { success: true, data }
+  } catch (e) {
+    console.error("Exception sending admin notification:", e)
+    return { success: false, error: e }
+  }
+}

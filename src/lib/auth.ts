@@ -99,10 +99,15 @@ const providers = [
           };
           const docRef = await usersRef.add(newUser);
 
-          // Send welcome email
+          // Send welcome email & Admin notification
           try {
-            const { sendWelcomeEmail } = await import("@/lib/mail");
+            const { sendWelcomeEmail, sendNewUserAdminNotification } = await import("@/lib/mail");
             await sendWelcomeEmail(newUser.email, newUser.firstName);
+            await sendNewUserAdminNotification({
+              email: newUser.email,
+              firstName: newUser.firstName,
+              lastName: newUser.lastName
+            });
           } catch (emailError) {
             console.error("Failed to send welcome email during Google sign-up:", emailError);
             // Don't block registration

@@ -3,7 +3,7 @@
 import bcrypt from "bcryptjs"
 import { revalidatePath } from "next/cache"
 import { signUpSchema, type SignUpValues } from "@/lib/validators/auth"
-import { sendWelcomeEmail } from "@/lib/mail"
+import { sendWelcomeEmail, sendNewUserAdminNotification } from "@/lib/mail"
 
 export async function registerUser(values: SignUpValues) {
   const parsed = signUpSchema.safeParse(values)
@@ -50,6 +50,13 @@ export async function registerUser(values: SignUpValues) {
     } catch (emailError) {
       console.error("Failed to send welcome email:", emailError)
       // We don't block registration if email fails, but we log it
+    }
+
+    // Send admin notification
+    try {
+      await sendNewUserAdminNotification({ email, firstName, lastName, phone })
+    } catch (adminEmailError) {
+      console.error("Failed to send admin notification:", adminEmailError)
     }
 
     revalidatePath("/sign-in")
