@@ -94,7 +94,7 @@ const providers = [
             lastName: decodedToken.name?.split(" ").slice(1).join(" ") || "",
             image: decodedToken.picture,
             role: "CLIENT",
-            createdAt: new Date(),
+            createdAt: new Date().toISOString(),
             provider: "google"
           };
           const docRef = await usersRef.add(newUser);

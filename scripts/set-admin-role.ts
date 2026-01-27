@@ -21,7 +21,7 @@ async function setAdminRole(email: string) {
         // 2. Update Firestore document
         await db.collection("users").doc(user.uid).set({
             role: "ADMIN",
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString(),
         }, { merge: true });
 
         console.log("=".repeat(50));

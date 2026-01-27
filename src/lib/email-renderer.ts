@@ -52,7 +52,7 @@ export function generateNewsletterHtml(content: string, recipientName: string = 
             </div>
             
             <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #f0f0f0; text-align: center;">
-               <a href="https://ondaserena.com" style="display: inline-block; background-color: #E9B676; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 4px; font-size: 14px; font-weight: bold;">Accéder à mon espace</a>
+               <a href="https://onda-serena.com" style="display: inline-block; background-color: #E9B676; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 4px; font-size: 14px; font-weight: bold;">Accéder à mon espace</a>
             </div>
           </div>
   

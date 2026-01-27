@@ -37,8 +37,8 @@ export async function GET(req: Request) {
         // --- 1. Check for D+2 ---
         const d2 = getDateRange(2)
         const snapshotD2 = await db.collection("users")
-            .where("createdAt", ">=", d2.start)
-            .where("createdAt", "<=", d2.end)
+            .where("createdAt", ">=", d2.start.toISOString())
+            .where("createdAt", "<=", d2.end.toISOString())
             .get()
 
         for (const doc of snapshotD2.docs) {
@@ -63,8 +63,8 @@ export async function GET(req: Request) {
         // --- 2. Check for D+21 (3 weeks) ---
         const d21 = getDateRange(21)
         const snapshotD21 = await db.collection("users")
-            .where("createdAt", ">=", d21.start)
-            .where("createdAt", "<=", d21.end)
+            .where("createdAt", ">=", d21.start.toISOString())
+            .where("createdAt", "<=", d21.end.toISOString())
             .get()
 
         for (const doc of snapshotD21.docs) {
