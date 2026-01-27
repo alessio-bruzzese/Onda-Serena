@@ -15,12 +15,71 @@ export function LeadMagnetForm() {
     location: "",
     consent: false,
   })
+  const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implémenter l'envoi du formulaire et le téléchargement du PDF
-    console.log("Form submitted:", formData)
-    alert("Merci ! Le guide sera envoyé à votre adresse email.")
+    setLoading(true)
+
+    try {
+      const response = await fetch("/api/lead-magnet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        const errorDetails = data.error ? JSON.stringify(data.error) : ""
+        throw new Error(`${data.message || "Une erreur est survenue"} ${errorDetails}`)
+      }
+
+      setSubmitted(true)
+      // Reset after success if needed, or keep showing success message
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        location: "",
+        consent: false,
+      })
+      alert("Votre guide a été envoyé par email !")
+    } catch (error) {
+      console.error("Error submitting form:", error)
+      alert(error instanceof Error ? error.message : "Une erreur est survenue lors de l'envoi du formulaire.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (submitted) {
+    return (
+      <section id="lead-magnet" className="bg-transparent py-24">
+        <div className="mx-auto max-w-2xl px-6 md:px-12">
+          <Card className="border-2 border-[#A6CFE3]/30 bg-white shadow-xl">
+            <CardHeader className="text-center">
+              <CardTitle className="text-3xl font-light text-[#1a1a1a]">
+                Guide Envoyé !
+              </CardTitle>
+              <p className="text-[#1a1a1a]/70 font-body mt-2">
+                Merci ! Votre guide a été envoyé à l&apos;adresse email indiquée.
+              </p>
+            </CardHeader>
+            <CardContent className="flex justify-center pb-8">
+              <Button
+                onClick={() => setSubmitted(false)}
+                className="bg-[#E9B676] text-white hover:bg-[#d4a565] font-body"
+              >
+                Retour
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -46,6 +105,7 @@ export function LeadMagnetForm() {
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     className="font-body"
+                    disabled={loading}
                   />
                 </div>
                 <div className="space-y-2">
@@ -56,6 +116,7 @@ export function LeadMagnetForm() {
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     className="font-body"
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -68,6 +129,7 @@ export function LeadMagnetForm() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="font-body"
+                  disabled={loading}
                 />
               </div>
               <div className="space-y-2">
@@ -79,6 +141,7 @@ export function LeadMagnetForm() {
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   className="font-body"
+                  disabled={loading}
                 />
               </div>
               <div className="flex items-start space-x-3">
@@ -87,6 +150,7 @@ export function LeadMagnetForm() {
                   required
                   checked={formData.consent}
                   onCheckedChange={(checked) => setFormData({ ...formData, consent: checked === true })}
+                  disabled={loading}
                 />
                 <Label htmlFor="consent" className="text-sm text-[#1a1a1a]/70 font-body leading-relaxed cursor-pointer">
                   J&apos;accepte que mes données soient utilisées pour recevoir le guide et être contacté par ONDA SERENA
@@ -97,8 +161,9 @@ export function LeadMagnetForm() {
                 type="submit"
                 size="lg"
                 className="w-full bg-[#E9B676] text-white hover:bg-[#d4a565] font-body"
+                disabled={loading}
               >
-                Télécharger le guide gratuit
+                {loading ? "Envoi en cours..." : "Télécharger le guide gratuit"}
               </Button>
             </form>
           </CardContent>
