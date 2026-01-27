@@ -141,3 +141,79 @@ export async function sendLeadMagnetEmail(email: string, firstName: string, last
     return { success: false, error }
   }
 }
+
+import { generateNewsletterHtml, generateRetentionEmailHtml } from './email-renderer'
+
+// ...
+
+export async function sendRetentionEmail(type: 'DAYS_2' | 'WEEKS_3', recipient: { email: string; firstName: string }) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    return { success: false, error: "Missing API Key" }
+  }
+
+  const resend = new Resend(apiKey)
+
+  try {
+    const { subject, html } = generateRetentionEmailHtml(type, recipient.firstName)
+
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: [recipient.email],
+      subject: subject,
+      html: html
+    })
+
+    if (error) {
+      console.error(`Retention email error (${type}) for ${recipient.email}:`, error)
+      return { success: false, error }
+    }
+
+    console.log(`Retention email sent (${type}) to ${recipient.email}`)
+    return { success: true, data }
+  } catch (e) {
+    console.error(`Exception sending retention email (${type}) to ${recipient.email}:`, e)
+    return { success: false, error: e }
+  }
+}
+
+
+export async function sendNewsletter(subject: string, content: string, recipients: { email: string; firstName: string }[]) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    return { success: false, error: "Missing API Key" }
+  }
+
+  const resend = new Resend(apiKey)
+
+  // Resend 'broadcast' or batch sending limitations might apply.
+  // For simplicity and safety, we will loop and send individually for now (or use Bcc if privacy allows, but for personalization individual is better).
+  // Note: For large lists, this should be a queue or batch job. Frontend will just wait for now as user base is likely small.
+
+  let successCount = 0
+  let errorCount = 0
+
+  // Send in batches of 10 to avoid rate limits if necessary, but sequential await is safest start
+  for (const recipient of recipients) {
+    try {
+      const { error } = await resend.emails.send({
+        from: FROM_EMAIL,
+        to: [recipient.email],
+        subject: subject,
+        html: generateNewsletterHtml(content, recipient.firstName)
+      })
+
+      if (error) {
+        console.error(`Failed to send to ${recipient.email}:`, error)
+        errorCount++
+      } else {
+        successCount++
+      }
+    } catch (e) {
+      console.error(`Exception sending to ${recipient.email}:`, e)
+      errorCount++
+    }
+  }
+
+  return { success: true, successCount, errorCount }
+}

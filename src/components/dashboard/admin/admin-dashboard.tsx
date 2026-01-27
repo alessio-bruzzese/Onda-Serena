@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { UsersManagement } from "./users-management"
 import { BookingsManagement } from "./bookings-management"
 import { ServicesManagement } from "./services-management"
-import { Download } from "lucide-react"
+import Link from "next/link"
+import { Download, Send } from "lucide-react"
 
 
 type UserWithCount = {
@@ -88,6 +89,14 @@ export function AdminDashboard({
             <p className="font-body text-[#1a1a1a]/70 mt-2">Pilotage complet des KPI, clients et réservations.</p>
           </div>
           <div className="flex gap-2">
+            <Link href="/admin/newsletter">
+              <Button
+                className="bg-[#E9B676] text-white hover:bg-[#d4a565] font-body"
+              >
+                <Send className="mr-2 h-4 w-4" />
+                Newsletter
+              </Button>
+            </Link>
             <Button
               variant="outline"
               className="border-[#A8A8A8]/30 text-[#1a1a1a] hover:bg-[#F5E9D4]/50 font-body"
