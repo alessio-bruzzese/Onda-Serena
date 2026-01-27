@@ -37,7 +37,7 @@ export async function POST(req: Request) {
             const usersSnapshot = await db.collection("users").get()
             usersSnapshot.forEach(doc => {
                 const data = doc.data()
-                if (data.email) {
+                if (data.email && data.marketingOptOut !== true) {
                     recipients.push({ email: data.email, firstName: data.firstName || "Cher membre" })
                 }
             })

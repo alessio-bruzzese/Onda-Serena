@@ -22,8 +22,9 @@ export default async function NewsletterPage() {
             email: data.email || "",
             firstName: data.firstName || null,
             lastName: data.lastName || null,
+            marketingOptOut: data.marketingOptOut
         }
-    }).filter(u => u.email) // Filter out users without email if any
+    }).filter(u => u.email && u.marketingOptOut !== true) // Filter out users without email OR opt-out
 
     return (
         <div className="mx-auto max-w-6xl p-6">

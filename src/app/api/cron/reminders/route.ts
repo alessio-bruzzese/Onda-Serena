@@ -52,7 +52,7 @@ export async function GET(req: Request) {
                 .limit(1)
                 .get()
 
-            if (bookingsSnap.empty && user.email) {
+            if (bookingsSnap.empty && user.email && user.marketingOptOut !== true) {
                 // User has no bookings -> SEND EMAIL
                 const res = await sendRetentionEmail('DAYS_2', { email: user.email, firstName: user.firstName || "Cher membre" })
                 if (res.success) stats.days2.sent++
@@ -78,7 +78,7 @@ export async function GET(req: Request) {
                 .limit(1)
                 .get()
 
-            if (bookingsSnap.empty && user.email) {
+            if (bookingsSnap.empty && user.email && user.marketingOptOut !== true) {
                 // User has no bookings -> SEND EMAIL
                 const res = await sendRetentionEmail('WEEKS_3', { email: user.email, firstName: user.firstName || "Cher membre" })
                 if (res.success) stats.weeks3.sent++
