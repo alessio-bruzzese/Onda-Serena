@@ -34,7 +34,10 @@ export const metadata: Metadata = {
   description:
     "Votre tranquillité, notre mission. Conciergerie premium pour propriétaires de locations saisonnières sur la Côte Bleue. Gestion complète, décoration et services voyageurs.",
   metadataBase: new URL("https://ondaserena.com"),
-
+  icons: {
+    icon: '/icon.png',
+    apple: '/icon.png',
+  },
 }
 
 export default function RootLayout({
