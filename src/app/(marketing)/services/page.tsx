@@ -52,7 +52,10 @@ export default function ServicesPage() {
                 </div>
                 <div>
                   <CardTitle className="text-2xl font-heading-alt text-[#1C1917]">Pack Starter</CardTitle>
-                  <p className="text-xl font-light text-[#D4AF37] font-body">250€</p>
+                  <div className="flex flex-col">
+                    <span className="text-lg font-light text-[#D4AF37]/60 line-through font-body">250€</span>
+                    <span className="text-lg font-medium text-[#D4AF37] font-body">Offert jusqu&apos;au 1er mai</span>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="text-[#1C1917]/70 font-body pl-[5.5rem]">
@@ -143,7 +146,7 @@ export default function ServicesPage() {
             </div>
           </div>
         </div>
-      </div>
+      </div >
       <Footer />
     </>
   )
