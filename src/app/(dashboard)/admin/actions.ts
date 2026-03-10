@@ -311,7 +311,7 @@ export async function createBlogPost(formData: FormData | Record<string, unknown
       content: formData.get("content"),
       category: formData.get("category"),
       date: formData.get("date"),
-      coverImage: formData.get("coverImage") || undefined,
+      coverImage: formData.get("coverImage") || "",
     }
     : formData
 
@@ -356,7 +356,7 @@ export async function updateBlogPost(formData: FormData | Record<string, unknown
       content: formData.get("content") as string,
       category: formData.get("category") as string,
       date: formData.get("date") as string,
-      coverImage: formData.get("coverImage") as string,
+      coverImage: formData.get("coverImage") as string || "",
     }
     : formData
 
