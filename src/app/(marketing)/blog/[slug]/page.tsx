@@ -73,7 +73,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 prose-a:text-[#A6CFE3] prose-a:no-underline hover:prose-a:text-[#E9B676] hover:prose-a:underline
                 prose-strong:font-semibold prose-strong:text-[#1a1a1a]
                 prose-ul:list-disc prose-ul:pl-6 prose-li:marker:text-[#E9B676]
-                break-words [&_*]:break-words [&_*]:whitespace-pre-wrap"
+                overflow-wrap-anywhere [&_*]:whitespace-pre-wrap"
                             dangerouslySetInnerHTML={{ __html: post.content }}
                         />
                     </article>
