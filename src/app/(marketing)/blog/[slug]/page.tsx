@@ -73,8 +73,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 prose-a:text-[#A6CFE3] prose-a:no-underline hover:prose-a:text-[#E9B676] hover:prose-a:underline
                 prose-strong:font-semibold prose-strong:text-[#1a1a1a]
                 prose-ul:list-disc prose-ul:pl-6 prose-li:marker:text-[#E9B676]
-                overflow-wrap-anywhere [&_*]:whitespace-pre-wrap"
-                            dangerouslySetInnerHTML={{ __html: post.content }}
+                [&_*]:!whitespace-normal [&_*]:!break-normal"
+                            dangerouslySetInnerHTML={{ __html: post.content.replace(/&nbsp;|\u00A0/g, ' ') }}
                         />
                     </article>
                 </div>
