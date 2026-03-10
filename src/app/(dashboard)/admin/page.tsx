@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import { getCurrentSession } from "@/lib/session"
 import { AdminDashboard } from "@/components/dashboard/admin/admin-dashboard"
-import type { Booking, UserProfile, Service } from "@/types/firestore"
+import type { Booking, UserProfile, Service, BlogPost } from "@/types/firestore"
 
 import { serializeFirestoreData } from "@/lib/utils"
 
@@ -17,10 +17,11 @@ export default async function AdminDashboardPage() {
 
   const { db } = await import("@/lib/firebase-admin");
 
-  const [bookingsSnapshot, usersSnapshot, servicesSnapshot] = await Promise.all([
+  const [bookingsSnapshot, usersSnapshot, servicesSnapshot, blogsSnapshot] = await Promise.all([
     db.collection("bookings").orderBy("date", "desc").get(),
     db.collection("users").orderBy("createdAt", "desc").get(),
     db.collection("services").orderBy("name", "asc").get(),
+    db.collection("blog_posts").orderBy("date", "desc").get(),
   ])
 
   const bookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...serializeFirestoreData(doc.data()) })) as Booking[];
@@ -34,6 +35,7 @@ export default async function AdminDashboardPage() {
     };
   }) as UserProfile[];
   const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...serializeFirestoreData(doc.data()) })) as Service[];
+  const blogPosts = blogsSnapshot.docs.map(doc => ({ id: doc.id, ...serializeFirestoreData(doc.data()) })) as BlogPost[];
 
   // Calculate stats
   const bookingsThisMonth = bookings.filter((b) => b.date >= startOfMonth).length;
@@ -90,6 +92,7 @@ export default async function AdminDashboardPage() {
       users={users}
       bookings={bookingsWithRelations}
       services={servicesWithNumberPrice}
+      blogPosts={blogPosts}
     />
   )
 }

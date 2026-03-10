@@ -35,7 +35,19 @@ export type ServiceValues = z.infer<typeof serviceSchema>
 export type ServiceUpdateValues = z.infer<typeof serviceUpdateSchema>
 export type BookingUpdateValues = z.infer<typeof bookingUpdateSchema>
 
+export const blogPostSchema = z.object({
+  slug: z.string().min(1, "Le slug est requis"),
+  title: z.string().min(1, "Le titre est requis"),
+  excerpt: z.string().min(1, "L'extrait est requis"),
+  content: z.string().min(1, "Le contenu est requis"),
+  category: z.string().min(1, "La catégorie est requise"),
+  date: z.string().min(1, "La date est requise"),
+  coverImage: z.string().url().optional().or(z.literal("")),
+})
 
+export const blogPostUpdateSchema = blogPostSchema.extend({
+  postId: z.string(),
+})
 
-
-
+export type BlogPostValues = z.infer<typeof blogPostSchema>
+export type BlogPostUpdateValues = z.infer<typeof blogPostUpdateSchema>

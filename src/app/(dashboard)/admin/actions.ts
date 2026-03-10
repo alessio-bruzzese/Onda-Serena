@@ -299,4 +299,118 @@ export async function deleteService(formData: FormData | Record<string, unknown>
   return { success: "Service supprimé." }
 }
 
+// Blog actions
+export async function createBlogPost(formData: FormData | Record<string, unknown>) {
+  await assertAdmin()
+
+  const data = formData instanceof FormData
+    ? {
+      slug: formData.get("slug"),
+      title: formData.get("title"),
+      excerpt: formData.get("excerpt"),
+      content: formData.get("content"),
+      category: formData.get("category"),
+      date: formData.get("date"),
+      coverImage: formData.get("coverImage") || undefined,
+    }
+    : formData
+
+  const { blogPostSchema } = await import("@/lib/validators/admin");
+  const parsed = blogPostSchema.safeParse(data);
+
+  if (!parsed.success) {
+    return { error: "Données invalides." }
+  }
+
+  const { db } = await import("@/lib/firebase-admin");
+
+  // Check if blog post slug already exists
+  const existingSnapshot = await db.collection("blog_posts")
+    .where("slug", "==", parsed.data.slug)
+    .get();
+
+  if (!existingSnapshot.empty) {
+    return { error: "Un article avec ce slug existe déjà." }
+  }
+
+  await db.collection("blog_posts").add({
+    ...parsed.data,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+
+  revalidatePath("/admin")
+  revalidatePath("/blog")
+  return { success: "Article créé." }
+}
+
+export async function updateBlogPost(formData: FormData | Record<string, unknown>) {
+  await assertAdmin()
+
+  const data = formData instanceof FormData
+    ? {
+      postId: formData.get("postId"),
+      slug: formData.get("slug") as string,
+      title: formData.get("title") as string,
+      excerpt: formData.get("excerpt") as string,
+      content: formData.get("content") as string,
+      category: formData.get("category") as string,
+      date: formData.get("date") as string,
+      coverImage: formData.get("coverImage") as string,
+    }
+    : formData
+
+  const { blogPostUpdateSchema } = await import("@/lib/validators/admin");
+  const parsed = blogPostUpdateSchema.safeParse(data);
+
+  if (!parsed.success) {
+    return { error: "Données invalides." }
+  }
+
+  const { postId, ...updateData } = parsed.data
+
+  const { db } = await import("@/lib/firebase-admin");
+
+  if (updateData.slug) {
+    const existingSnapshot = await db.collection("blog_posts")
+      .where("slug", "==", updateData.slug)
+      .get();
+
+    if (!existingSnapshot.empty) {
+      const existingPost = existingSnapshot.docs[0];
+      if (existingPost.id !== postId) {
+        return { error: "Un article avec ce slug existe déjà." }
+      }
+    }
+  }
+
+  await db.collection("blog_posts").doc(postId).update({
+    ...updateData,
+    updatedAt: new Date().toISOString(),
+  });
+
+  revalidatePath("/admin")
+  revalidatePath("/blog")
+  revalidatePath(`/blog/${updateData.slug}`)
+  return { success: "Article mis à jour." }
+}
+
+export async function deleteBlogPost(formData: FormData | Record<string, unknown>) {
+  await assertAdmin()
+
+  const postId = formData instanceof FormData
+    ? formData.get("postId")
+    : (formData as { postId: string }).postId
+
+  if (typeof postId !== "string") {
+    return { error: "ID d'article invalide." }
+  }
+
+  const { db } = await import("@/lib/firebase-admin");
+  await db.collection("blog_posts").doc(postId).delete();
+
+  revalidatePath("/admin")
+  revalidatePath("/blog")
+  return { success: "Article supprimé." }
+}
 

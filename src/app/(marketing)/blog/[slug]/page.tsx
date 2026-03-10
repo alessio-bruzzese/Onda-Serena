@@ -4,7 +4,10 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Footer } from "@/components/marketing/footer"
 import { Calendar, ArrowLeft } from "lucide-react"
-import { blogPosts } from "@/data/blog-posts"
+import { serializeFirestoreData } from "@/lib/utils"
+import type { BlogPost } from "@/types/firestore"
+
+export const revalidate = 60
 
 interface BlogPostPageProps {
     params: Promise<{
@@ -13,18 +16,24 @@ interface BlogPostPageProps {
 }
 
 export async function generateStaticParams() {
-    return blogPosts.map((post) => ({
-        slug: post.slug,
+    const { db } = await import("@/lib/firebase-admin")
+    const snapshot = await db.collection("blog_posts").select("slug").get()
+    return snapshot.docs.map((doc) => ({
+        slug: doc.data().slug as string,
     }))
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const { slug } = await params
-    const post = blogPosts.find((p) => p.slug === slug)
 
-    if (!post) {
+    const { db } = await import("@/lib/firebase-admin")
+    const snapshot = await db.collection("blog_posts").where("slug", "==", slug).limit(1).get()
+
+    if (snapshot.empty) {
         notFound()
     }
+
+    const post = { id: snapshot.docs[0].id, ...serializeFirestoreData(snapshot.docs[0].data()) } as BlogPost
 
     return (
         <>

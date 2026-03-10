@@ -7,8 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { UsersManagement } from "./users-management"
 import { BookingsManagement } from "./bookings-management"
 import { ServicesManagement } from "./services-management"
+import { BlogManagement } from "./blog-management"
 import Link from "next/link"
 import { Download, Send } from "lucide-react"
+import type { BlogPost } from "@/types/firestore"
 
 
 type UserWithCount = {
@@ -62,6 +64,7 @@ type Props = {
   users: UserWithCount[]
   bookings: BookingWithRelations[]
   services: ServiceType[]
+  blogPosts: BlogPost[]
 }
 
 export function AdminDashboard({
@@ -71,8 +74,9 @@ export function AdminDashboard({
   users,
   bookings,
   services,
+  blogPosts,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<"overview" | "users" | "bookings" | "services">("overview")
+  const [activeTab, setActiveTab] = useState<"overview" | "users" | "bookings" | "services" | "blog">("overview")
 
   const handleExport = async (entity: string, format: "json" | "csv") => {
     const url = `/api/admin/export?entity=${entity}&type=${format}`
@@ -152,6 +156,15 @@ export function AdminDashboard({
               }`}
           >
             Services
+          </button>
+          <button
+            onClick={() => setActiveTab("blog")}
+            className={`px-2 py-3 text-sm font-medium transition-all font-body tracking-wide ${activeTab === "blog"
+              ? "border-b-2 border-[#E9B676] text-[#E9B676]"
+              : "text-[#1a1a1a]/60 hover:text-[#A6CFE3]"
+              }`}
+          >
+            Blog
           </button>
         </div>
 
@@ -246,6 +259,7 @@ export function AdminDashboard({
         {activeTab === "users" && <UsersManagement initialUsers={users} />}
         {activeTab === "bookings" && <BookingsManagement initialBookings={bookings} />}
         {activeTab === "services" && <ServicesManagement initialServices={services} />}
+        {activeTab === "blog" && <BlogManagement initialPosts={blogPosts} />}
       </div>
     </div>
   )

@@ -4,9 +4,16 @@ import { Badge } from "@/components/ui/badge"
 import { Footer } from "@/components/marketing/footer"
 import { Calendar } from "lucide-react"
 
-import { blogPosts } from "@/data/blog-posts"
+import { serializeFirestoreData } from "@/lib/utils"
+import type { BlogPost } from "@/types/firestore"
 
-export default function BlogPage() {
+export const revalidate = 60
+
+export default async function BlogPage() {
+  const { db } = await import("@/lib/firebase-admin")
+  const snapshot = await db.collection("blog_posts").orderBy("createdAt", "desc").get()
+  const blogPosts = snapshot.docs.map(doc => ({ id: doc.id, ...serializeFirestoreData(doc.data()) })) as BlogPost[]
+
   return (
     <>
       <div className="min-h-screen bg-transparent">
@@ -27,7 +34,7 @@ export default function BlogPage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
             {blogPosts.map((article, index) => (
               <Card
-                key={index}
+                key={article.id || index}
                 className="border-[#A8A8A8]/20 bg-white shadow-md hover:shadow-xl transition-shadow"
               >
                 <CardHeader>
@@ -67,4 +74,3 @@ export default function BlogPage() {
     </>
   )
 }
-
