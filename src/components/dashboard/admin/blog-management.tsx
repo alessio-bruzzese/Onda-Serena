@@ -259,6 +259,9 @@ export function BlogManagement({ initialPosts }: { initialPosts: BlogPost[] }) {
                                                     [{ color: [] }, { background: [] }],
                                                     ["clean"],
                                                 ],
+                                                clipboard: {
+                                                    matchVisual: false,
+                                                }
                                             }}
                                         />
                                     </div>
