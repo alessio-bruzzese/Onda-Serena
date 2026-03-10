@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus, Pencil, Trash2 } from "lucide-react"
 
@@ -12,6 +12,13 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
+import dynamic from "next/dynamic"
+
+const ReactQuill = dynamic(() => import("react-quill-new"), {
+    ssr: false,
+    loading: () => <p className="text-sm text-[#A8A8A8] font-body py-4">Chargement de l'éditeur...</p>,
+})
+import "react-quill-new/dist/quill.snow.css"
 
 import { blogPostSchema, type BlogPostValues } from "@/lib/validators/admin"
 import { createBlogPost, updateBlogPost, deleteBlogPost } from "@/app/(dashboard)/admin/actions"
@@ -232,10 +239,30 @@ export function BlogManagement({ initialPosts }: { initialPosts: BlogPost[] }) {
 
                         <div className="space-y-2">
                             <Label htmlFor="content" className="font-body text-[#1a1a1a]">Contenu (HTML/Texte)</Label>
-                            <Textarea
-                                id="content"
-                                {...form.register("content")}
-                                className="rounded-xl border-[#A8A8A8]/30 font-body placeholder:text-[#A8A8A8] min-h-[200px]"
+                            <Controller
+                                name="content"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <div className="bg-white rounded-xl border border-[#A8A8A8]/30 overflow-hidden">
+                                        <ReactQuill
+                                            theme="snow"
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            className="font-body"
+                                            modules={{
+                                                toolbar: [
+                                                    [{ header: [2, 3, 4, false] }],
+                                                    [{ size: ["small", false, "large", "huge"] }],
+                                                    ["bold", "italic", "underline", "strike", "blockquote"],
+                                                    [{ list: "ordered" }, { list: "bullet" }],
+                                                    ["link", "image"],
+                                                    [{ color: [] }, { background: [] }],
+                                                    ["clean"],
+                                                ],
+                                            }}
+                                        />
+                                    </div>
+                                )}
                             />
                             {form.formState.errors.content && (
                                 <p className="text-sm text-red-500 font-body">{form.formState.errors.content.message}</p>
