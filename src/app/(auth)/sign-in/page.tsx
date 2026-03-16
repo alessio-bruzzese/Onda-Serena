@@ -1,8 +1,18 @@
 import Link from "next/link"
+import { redirect } from "next/navigation"
+import { getCurrentSession } from "@/lib/session"
 import { SignInForm } from "@/components/auth/sign-in-form"
 import { Badge } from "@/components/ui/badge"
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const session = await getCurrentSession()
+  if (session?.user) {
+    if (session.user.role === "ADMIN") {
+      redirect("/admin")
+    } else {
+      redirect("/dashboard")
+    }
+  }
   return (
     <div className="space-y-8 text-[#1a1a1a]">
       <div className="space-y-4 text-center">

@@ -49,19 +49,14 @@ export function SignInForm({ redirectTo = "/dashboard" }: SignInFormProps) {
         setError("Identifiants incorrects.")
         return
       }
-      // Wait a bit for session to be available, then check role
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      try {
-        const sessionResponse = await fetch("/api/auth/session")
-        const session = await sessionResponse.json()
-        const finalRedirect = session?.user?.role === "ADMIN" ? "/admin" : redirectTo
-        router.push(finalRedirect)
-        router.refresh()
-      } catch {
-        // Fallback to default redirect if session check fails
-        router.push(redirectTo)
-        router.refresh()
-      }
+      // Instead of waiting manually, we can just redirect and let the server handle the correct dashboard redirection
+      // Now that we have added server-side redirects in /sign-in, router.push("/dashboard") will automatically
+      // redirect ADMIN users to /admin since /dashboard might be protected, or at least the home page etc...
+      // Alternatively, we just do a hard refresh with window.location.href or direct router push and refresh.
+
+      // Since NextAuth sometimes takes a moment to propagate session context on client-side navigation,
+      // a full page reload or server-handled route is often the most robust way:
+      window.location.href = redirectTo;
     })
   }
 
