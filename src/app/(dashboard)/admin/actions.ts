@@ -32,7 +32,10 @@ export async function updateBookingStatus(formData: FormData | Record<string, un
         bookingId: formData.get("bookingId"),
         status: formData.get("status"),
       }
-      : formData,
+      : {
+        bookingId: (formData as any).bookingId,
+        status: (formData as any).status,
+      }
   )
 
   if (!parsed.success) {
