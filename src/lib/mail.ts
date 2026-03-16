@@ -257,3 +257,90 @@ export async function sendNewUserAdminNotification(user: { email: string, firstN
     return { success: false, error: e }
   }
 }
+
+export async function sendBookingConfirmationToClient(email: string, firstName: string, serviceName: string, dateStr: string) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    return { success: false, error: "Missing API Key" }
+  }
+
+  const resend = new Resend(apiKey)
+  const dateObj = new Date(dateStr)
+  // Options pour formater la date proprement : "lundi 12 janvier 2026 à 14:00"
+  const formattedDate = dateObj.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(':', 'h')
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: [email],
+      subject: "Confirmation de votre demande de réservation - ONDA SERENA",
+      html: `
+        <div style="font-family: sans-serif; color: #1a1a1a; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #E9B676; font-weight: 300; text-transform: uppercase; letter-spacing: 2px;">Bonjour ${firstName},</h1>
+          <p>Nous avons bien reçu votre demande de réservation pour la prestation suivante :</p>
+          <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 0 0 10px 0;"><strong>Prestation :</strong> ${serviceName}</p>
+            <p style="margin: 0;"><strong>Date souhaitée :</strong> ${formattedDate}</p>
+          </div>
+          <p>Un concierge ONDA SERENA va étudier votre demande et vous contactera très prochainement pour la valider.</p>
+          <p>À très bientôt,</p>
+          <p style="font-weight: bold;">L'équipe ONDA SERENA</p>
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+          <p style="font-size: 12px; color: #888;">Ceci est un message automatique, merci de ne pas y répondre.</p>
+        </div>
+      `,
+    })
+
+    if (error) {
+      console.error("Booking confirmation email error:", error)
+      return { success: false, error }
+    }
+
+    return { success: true, data }
+  } catch (e) {
+    console.error("Exception sending booking confirmation email:", e)
+    return { success: false, error: e }
+  }
+}
+
+export async function sendBookingNotificationToAdmin(user: { email: string, firstName: string | null, lastName: string | null, phone?: string | null }, serviceName: string, dateStr: string, notes?: string | null) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    return { success: false, error: "Missing API Key" }
+  }
+
+  const resend = new Resend(apiKey)
+  const dateObj = new Date(dateStr)
+  const formattedDate = dateObj.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(':', 'h')
+
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: ["conciergerie@onda-serena.com"],
+      subject: "Nouvelle demande de réservation via l'application",
+      html: `
+        <div style="font-family: sans-serif; color: #1a1a1a;">
+            <h2>Nouvelle demande de réservation</h2>
+            <p>Une nouvelle prestation a été réservée via l'espace membre :</p>
+            <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 0 0 10px 0;"><strong>Client :</strong> ${user.firstName || ""} ${user.lastName || ""} (${user.email})</p>
+              ${user.phone ? `<p style="margin: 0 0 10px 0;"><strong>Téléphone :</strong> ${user.phone}</p>` : ""}
+              <p style="margin: 0 0 10px 0;"><strong>Prestation :</strong> ${serviceName}</p>
+              <p style="margin: 0 0 10px 0;"><strong>Date souhaitée :</strong> ${formattedDate}</p>
+              ${notes ? `<p style="margin: 0;"><strong>Instructions :</strong><br />${notes.replace(/\n/g, '<br />')}</p>` : ""}
+            </div>
+        </div>
+      `,
+    })
+
+    if (error) {
+      console.error("Admin booking notification error:", error)
+      return { success: false, error }
+    }
+
+    return { success: true, data }
+  } catch (e) {
+    console.error("Exception sending admin booking notification:", e)
+    return { success: false, error: e }
+  }
+}

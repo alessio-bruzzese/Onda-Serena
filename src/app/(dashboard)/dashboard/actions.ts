@@ -24,6 +24,15 @@ export async function createBooking(formData: FormData | Record<string, unknown>
 
   const { db } = await import("@/lib/firebase-admin");
 
+  // Fetch service to get its name
+  const serviceSnap = await db.collection("services").doc(parsed.data.serviceId).get();
+  const serviceData = serviceSnap.exists ? serviceSnap.data() : null;
+  const serviceName = serviceData?.name || "Service Inconnu";
+
+  // Fetch user to get their details
+  const userSnap = await db.collection("users").doc(session.user.id).get();
+  const userData = userSnap.exists ? userSnap.data() : null;
+
   await db.collection("bookings").add({
     userId: session.user.id,
     serviceId: parsed.data.serviceId,
@@ -33,6 +42,34 @@ export async function createBooking(formData: FormData | Record<string, unknown>
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   })
+
+  // Send notifications
+  if (userData && userData.email) {
+    try {
+      const { sendBookingConfirmationToClient, sendBookingNotificationToAdmin } = await import("@/lib/mail");
+
+      await sendBookingConfirmationToClient(
+        userData.email,
+        userData.firstName || "",
+        serviceName,
+        parsed.data.date.toISOString()
+      );
+
+      await sendBookingNotificationToAdmin(
+        {
+          email: userData.email,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          phone: userData.phone,
+        },
+        serviceName,
+        parsed.data.date.toISOString(),
+        parsed.data.notes
+      );
+    } catch (e) {
+      console.error("Failed to send booking emails:", e);
+    }
+  }
 
   revalidatePath("/client")
   return { success: "Demande envoyée, un concierge va la valider." }
