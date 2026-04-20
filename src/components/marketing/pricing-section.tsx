@@ -10,7 +10,7 @@ import { useSession } from "next-auth/react"
 const forfaits = [
     {
         name: "Formule Essentielle",
-        price: "18% HT",
+        price: "18%",
         description: "Standard",
         features: [
             "Check-in/out",
@@ -22,7 +22,7 @@ const forfaits = [
     },
     {
         name: "Formule Prestige",
-        price: "20% HT",
+        price: "20%",
         description: "Haut de gamme",
         features: [
             "Tout de la Formule Essentielle",
