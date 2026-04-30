@@ -52,7 +52,7 @@ export function SignUpForm() {
         return
       }
       setFeedback({ type: "success", message: result?.success ?? "Compte créé." })
-      router.push("/sign-in")
+      router.push("/welcome")
     })
   }
 
@@ -74,7 +74,7 @@ export function SignUpForm() {
 
       // Wait a bit for session to be available
       await new Promise((resolve) => setTimeout(resolve, 100))
-      router.push("/dashboard")
+      router.push("/welcome")
       router.refresh()
     } catch (error) {
       console.error("Google sign up error:", error)
