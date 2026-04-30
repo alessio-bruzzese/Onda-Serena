@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { Cinzel_Decorative, Marcellus_SC, Lato, Nunito_Sans } from "next/font/google"
 import "./globals.css"
 import { Providers } from "@/components/providers"
+import { MetaPixel } from "@/components/meta-pixel"
 
 const cinzelDecorative = Cinzel_Decorative({
   variable: "--font-cinzel-decorative",
@@ -47,6 +48,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" suppressHydrationWarning>
+      <head>
+        <MetaPixel />
+      </head>
       <body className={`${cinzelDecorative.variable} ${marcellusSC.variable} ${lato.variable} ${nunitoSans.variable} font-sans text-foreground antialiased`}>
         <Providers>{children}</Providers>
         <SpeedInsights />

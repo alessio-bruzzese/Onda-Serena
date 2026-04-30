@@ -52,6 +52,11 @@ export function SignUpForm() {
         return
       }
       setFeedback({ type: "success", message: result?.success ?? "Compte créé." })
+      // @ts-ignore
+      if (typeof window !== "undefined" && window.fbq) {
+        // @ts-ignore
+        window.fbq('track', 'CompleteRegistration');
+      }
       router.push("/welcome")
     })
   }
@@ -74,6 +79,11 @@ export function SignUpForm() {
 
       // Wait a bit for session to be available
       await new Promise((resolve) => setTimeout(resolve, 100))
+      // @ts-ignore
+      if (typeof window !== "undefined" && window.fbq) {
+        // @ts-ignore
+        window.fbq('track', 'CompleteRegistration');
+      }
       router.push("/welcome")
       router.refresh()
     } catch (error) {
