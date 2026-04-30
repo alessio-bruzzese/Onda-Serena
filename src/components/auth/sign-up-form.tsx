@@ -55,7 +55,16 @@ export function SignUpForm() {
       // @ts-ignore
       if (typeof window !== "undefined" && window.fbq) {
         // @ts-ignore
-        window.fbq('track', 'CompleteRegistration');
+        window.fbq('init', '1906853233352775', {
+          em: values.email?.toLowerCase(),
+          fn: values.firstName?.toLowerCase(),
+          ln: values.lastName?.toLowerCase(),
+          ph: values.phone?.replace(/\D/g, '') || undefined,
+        });
+        // @ts-ignore
+        window.fbq('track', 'CompleteRegistration', {
+          content_name: 'Inscription Utilisateur'
+        });
       }
       router.push("/welcome")
     })
@@ -77,12 +86,27 @@ export function SignUpForm() {
         return
       }
 
+      const email = result.user.email
+      const displayName = result.user.displayName || ""
+      const fn = displayName.split(" ")[0] || ""
+      const ln = displayName.split(" ").slice(1).join(" ") || ""
+      const ph = result.user.phoneNumber || ""
+
       // Wait a bit for session to be available
       await new Promise((resolve) => setTimeout(resolve, 100))
       // @ts-ignore
       if (typeof window !== "undefined" && window.fbq) {
         // @ts-ignore
-        window.fbq('track', 'CompleteRegistration');
+        window.fbq('init', '1906853233352775', {
+          em: email?.toLowerCase(),
+          fn: fn?.toLowerCase(),
+          ln: ln?.toLowerCase(),
+          ph: ph?.replace(/\D/g, '') || undefined,
+        });
+        // @ts-ignore
+        window.fbq('track', 'CompleteRegistration', {
+          content_name: 'Inscription Google'
+        });
       }
       router.push("/welcome")
       router.refresh()
