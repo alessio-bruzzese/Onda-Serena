@@ -2,9 +2,9 @@
 
 import Script from "next/script"
 import { usePathname, useSearchParams } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, Suspense } from "react"
 
-export function MetaPixel() {
+function MetaPixelInner() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -47,5 +47,13 @@ export function MetaPixel() {
         />
       </noscript>
     </>
+  )
+}
+
+export function MetaPixel() {
+  return (
+    <Suspense fallback={null}>
+      <MetaPixelInner />
+    </Suspense>
   )
 }
