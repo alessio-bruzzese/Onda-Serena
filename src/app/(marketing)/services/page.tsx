@@ -54,7 +54,7 @@ export default function ServicesPage() {
                   <CardTitle className="text-2xl font-heading-alt text-[#1C1917]">Pack Starter</CardTitle>
                   <div className="flex flex-col">
                     <span className="text-lg font-light text-[#D4AF37]/60 line-through font-body">250€</span>
-                    <span className="text-lg font-medium text-[#D4AF37] font-body">Offert jusqu&apos;au 1er mai</span>
+                    <span className="text-lg font-medium text-[#D4AF37] font-body">Offert jusqu&apos;au 1er juin</span>
                   </div>
                 </div>
               </CardHeader>
