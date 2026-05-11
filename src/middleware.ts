@@ -13,6 +13,9 @@ export default withAuth(
     return NextResponse.next()
   },
   {
+    // Passer le secret explicitement pour que withAuth décode
+    // le JWT même en production (cookie __Secure-next-auth.session-token)
+    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
       authorized: ({ token }) => !!token,
     },
