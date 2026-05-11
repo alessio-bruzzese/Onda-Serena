@@ -26,8 +26,11 @@ export async function createBooking(formData: FormData | Record<string, unknown>
 
   // Fetch service to get its name
   const serviceSnap = await db.collection("services").doc(parsed.data.serviceId).get();
-  const serviceData = serviceSnap.exists ? serviceSnap.data() : null;
-  const serviceName = serviceData?.name || "Service Inconnu";
+  if (!serviceSnap.exists) {
+    return { error: "Service introuvable." }
+  }
+  const serviceData = serviceSnap.data()!;
+  const serviceName = serviceData.name || "Service Inconnu";
 
   // Fetch user to get their details
   const userSnap = await db.collection("users").doc(session.user.id).get();

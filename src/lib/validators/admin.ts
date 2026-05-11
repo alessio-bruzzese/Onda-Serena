@@ -1,11 +1,11 @@
 import { z } from "zod"
 
 export const userUpdateSchema = z.object({
-  userId: z.string().cuid(),
-  email: z.string().email().optional(),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-  phone: z.string().optional(),
+  userId: z.string().min(1),
+  email: z.string().email().max(254).optional(),
+  firstName: z.string().max(100).optional(),
+  lastName: z.string().max(100).optional(),
+  phone: z.string().max(20).optional(),
   role: z.enum(["ADMIN", "CLIENT"]).optional(),
 })
 
@@ -13,7 +13,7 @@ export const serviceSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
   description: z.string().min(1, "La description est requise"),
   price: z.coerce.number().min(0, "Le prix doit être positif ou nul"),
-  priceType: z.enum(["PERCENTAGE", "QUOTE"]),
+  priceType: z.enum(["PERCENTAGE", "QUOTE", "FIXED"]),
   category: z.string().min(1, "La catégorie est requise"),
   imageUrl: z.string().url().optional().or(z.literal("")),
 })

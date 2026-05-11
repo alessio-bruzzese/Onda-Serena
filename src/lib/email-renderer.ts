@@ -1,3 +1,5 @@
+import { escapeHtml } from '@/lib/utils'
+
 export function generateRetentionEmailHtml(type: 'DAYS_2' | 'WEEKS_3', recipientName: string = "Cher membre") {
   let subject = ""
   let content = ""
@@ -29,10 +31,8 @@ export function generateRetentionEmailHtml(type: 'DAYS_2' | 'WEEKS_3', recipient
  * This function is shared between the frontend (preview) and backend (sending).
  */
 export function generateNewsletterHtml(content: string, recipientName: string = "Cher membre") {
-  // Simple line break conversion for text area content
-  // If content contains HTML tags, trust it (for advanced users), otherwise wrap lines
-  // Also handling if content already has <p> tags (like from retention templates) to avoid double wrapping or breaks 
-  const formattedContent = content.trim().startsWith("<") ? content : content.replace(/\n/g, '<br/>');
+  // Content from retention templates is trusted internal HTML; user-supplied newsletter content is escaped.
+  const formattedContent = content.trim().startsWith("<") ? content : escapeHtml(content).replace(/\n/g, '<br/>');
 
   return `
       <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #FAFAF9; padding: 40px 20px;">
@@ -45,7 +45,7 @@ export function generateNewsletterHtml(content: string, recipientName: string = 
   
           <!-- Content -->
           <div style="padding: 40px;">
-            <h1 style="color: #E9B676; font-weight: 300; text-transform: uppercase; letter-spacing: 1px; font-size: 20px; margin-top: 0;">Bonjour ${recipientName},</h1>
+            <h1 style="color: #E9B676; font-weight: 300; text-transform: uppercase; letter-spacing: 1px; font-size: 20px; margin-top: 0;">Bonjour ${escapeHtml(recipientName)},</h1>
             
             <div style="color: #44403C; font-size: 16px; line-height: 1.8; margin-top: 20px;">
               ${formattedContent}

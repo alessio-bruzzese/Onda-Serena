@@ -23,7 +23,12 @@ export async function GET(req: Request) {
     // Retrieve CRON_SECRET from env or use a fallback for dev simple protection
     const cronSecret = process.env.CRON_SECRET
 
-    if (cronSecret && secret !== cronSecret) {
+    if (!cronSecret) {
+        console.error("CRON_SECRET is not configured — cron endpoint is disabled for safety.")
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+    }
+
+    if (secret !== cronSecret) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
 

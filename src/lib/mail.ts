@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { escapeHtml } from '@/lib/utils'
 
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "ONDA SERENA <ne-pas-repondre@onda-serena.com>"
 
@@ -18,7 +19,7 @@ export async function sendWelcomeEmail(email: string, firstName: string) {
       subject: "Bienvenue chez ONDA SERENA",
       html: `
         <div style="font-family: sans-serif; color: #1a1a1a; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #E9B676; font-weight: 300; text-transform: uppercase; letter-spacing: 2px;">Bienvenue ${firstName}</h1>
+          <h1 style="color: #E9B676; font-weight: 300; text-transform: uppercase; letter-spacing: 2px;">Bienvenue ${escapeHtml(firstName)}</h1>
           <p>Nous sommes ravis de vous compter parmi nos membres.</p>
           <p>Votre compte a été créé avec succès. Vous pouvez dès à présent accéder à votre espace personnel pour :</p>
           <ul>
@@ -110,7 +111,7 @@ export async function sendLeadMagnetEmail(email: string, firstName: string, last
       subject: "Votre Guide Essentiel ONDA SERENA",
       html: `
         <div style="font-family: sans-serif; color: #1a1a1a; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #E9B676; font-weight: 300; text-transform: uppercase; letter-spacing: 2px;">Bonjour ${firstName},</h1>
+          <h1 style="color: #E9B676; font-weight: 300; text-transform: uppercase; letter-spacing: 2px;">Bonjour ${escapeHtml(firstName)},</h1>
           <p>Merci de votre intérêt pour ONDA SERENA.</p>
           <p>Comme promis, vous trouverez ci-joint votre <strong>Guide Essentiel</strong> pour optimiser vos revenus locatifs.</p>
           <p>Dans ce guide, vous découvrirez :</p>
@@ -236,9 +237,9 @@ export async function sendNewUserAdminNotification(user: { email: string, firstN
                     <h2>Nouvelle inscription</h2>
                     <p>Un nouvel utilisateur vient de créer un compte :</p>
                     <ul>
-                        <li><strong>Email :</strong> ${user.email}</li>
-                        <li><strong>Nom :</strong> ${user.firstName || ""} ${user.lastName || ""}</li>
-                        ${user.phone ? `<li><strong>Téléphone :</strong> ${user.phone}</li>` : ""}
+                        <li><strong>Email :</strong> ${escapeHtml(user.email)}</li>
+                        <li><strong>Nom :</strong> ${escapeHtml(user.firstName || "")} ${escapeHtml(user.lastName || "")}</li>
+                        ${user.phone ? `<li><strong>Téléphone :</strong> ${escapeHtml(user.phone)}</li>` : ""}
                         <li><strong>Date :</strong> ${new Date().toLocaleString("fr-FR")}</li>
                     </ul>
                 </div>
@@ -276,11 +277,11 @@ export async function sendBookingConfirmationToClient(email: string, firstName: 
       subject: "Confirmation de votre demande de réservation - ONDA SERENA",
       html: `
         <div style="font-family: sans-serif; color: #1a1a1a; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #E9B676; font-weight: 300; text-transform: uppercase; letter-spacing: 2px;">Bonjour ${firstName},</h1>
+          <h1 style="color: #E9B676; font-weight: 300; text-transform: uppercase; letter-spacing: 2px;">Bonjour ${escapeHtml(firstName)},</h1>
           <p>Nous avons bien reçu votre demande de réservation pour la prestation suivante :</p>
           <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p style="margin: 0 0 10px 0;"><strong>Prestation :</strong> ${serviceName}</p>
-            <p style="margin: 0;"><strong>Date souhaitée :</strong> ${formattedDate}</p>
+            <p style="margin: 0 0 10px 0;"><strong>Prestation :</strong> ${escapeHtml(serviceName)}</p>
+            <p style="margin: 0;"><strong>Date souhaitée :</strong> ${escapeHtml(formattedDate)}</p>
           </div>
           <p>Un concierge ONDA SERENA va étudier votre demande et vous contactera très prochainement pour la valider.</p>
           <p>À très bientôt,</p>
@@ -323,11 +324,11 @@ export async function sendBookingNotificationToAdmin(user: { email: string, firs
             <h2>Nouvelle demande de réservation</h2>
             <p>Une nouvelle prestation a été réservée via l'espace membre :</p>
             <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <p style="margin: 0 0 10px 0;"><strong>Client :</strong> ${user.firstName || ""} ${user.lastName || ""} (${user.email})</p>
-              ${user.phone ? `<p style="margin: 0 0 10px 0;"><strong>Téléphone :</strong> ${user.phone}</p>` : ""}
-              <p style="margin: 0 0 10px 0;"><strong>Prestation :</strong> ${serviceName}</p>
-              <p style="margin: 0 0 10px 0;"><strong>Date souhaitée :</strong> ${formattedDate}</p>
-              ${notes ? `<p style="margin: 0;"><strong>Instructions :</strong><br />${notes.replace(/\n/g, '<br />')}</p>` : ""}
+              <p style="margin: 0 0 10px 0;"><strong>Client :</strong> ${escapeHtml(user.firstName || "")} ${escapeHtml(user.lastName || "")} (${escapeHtml(user.email)})</p>
+              ${user.phone ? `<p style="margin: 0 0 10px 0;"><strong>Téléphone :</strong> ${escapeHtml(user.phone)}</p>` : ""}
+              <p style="margin: 0 0 10px 0;"><strong>Prestation :</strong> ${escapeHtml(serviceName)}</p>
+              <p style="margin: 0 0 10px 0;"><strong>Date souhaitée :</strong> ${escapeHtml(formattedDate)}</p>
+              ${notes ? `<p style="margin: 0;"><strong>Instructions :</strong><br />${escapeHtml(notes).replace(/\n/g, '<br />')}</p>` : ""}
             </div>
         </div>
       `,

@@ -150,6 +150,11 @@ export async function updateUser(formData: FormData | Record<string, unknown>) {
     updatedAt: new Date().toISOString(),
   });
 
+  if (updateData.role === "ADMIN") {
+    const session = await getCurrentSession()
+    console.warn(`[SECURITY] Role escalation: user ${userId} promoted to ADMIN by ${session?.user?.id} at ${new Date().toISOString()}`)
+  }
+
   revalidatePath("/admin")
   return { success: "Utilisateur mis à jour." }
 }
